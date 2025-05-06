@@ -1,4 +1,4 @@
-﻿namespace OnlineCoursesPlatform.Application.Repositories
+﻿namespace OnlineCoursesPlatform.Application.Interfaces
 {
     public interface IRepository<T> where T : class
     {
@@ -7,5 +7,6 @@
         void Delete(int id);
         T GetById(int id);
         IEnumerable<T> GetAll();
+        int GetLastId();
     }
 }

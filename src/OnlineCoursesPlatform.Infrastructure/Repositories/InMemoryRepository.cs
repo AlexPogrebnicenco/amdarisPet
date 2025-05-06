@@ -1,10 +1,21 @@
-﻿namespace OnlineCoursesPlatform.Application.Repositories
+﻿using OnlineCoursesPlatform.Application.Interfaces;
+
+namespace OnlineCoursesPlatform.Infrastructure.Repositories
 {
     public class InMemoryRepository<T> : IRepository<T> where T : class
     {
         private readonly List<T> _storage = new List<T>();
 
-        public void Add(T entity) => _storage.Add(entity);
+        public void Add(T entity)
+        {
+            var existingEntity = _storage.FirstOrDefault(e => (e as dynamic).Id == (entity as dynamic).Id);
+            if (existingEntity != null)
+            {
+                throw new InvalidOperationException($"Entity with Id {(entity as dynamic).Id} already exists.");
+            }
+            _storage.Add(entity);
+        }
+
 
         public void Delete(int id)
         {
@@ -42,6 +53,13 @@
             {
                 throw new InvalidOperationException($"Entity with id {(entity as dynamic).Id} not found for update.");
             }
+        }
+
+        public int GetLastId()
+        {
+            if (_storage.Count == 0) return 1;
+            var lastId = _storage.Max(a => (a as dynamic).Id);
+            return lastId +1;
         }
     }
 }

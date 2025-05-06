@@ -17,4 +17,10 @@
     <ProjectReference Include="..\OnlineCoursesPlatform.Domain\OnlineCoursesPlatform.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Courses\Queries\" />
+    <Folder Include="Features\Teachers\" />
+    <Folder Include="Features\Users\Queries\" />
+  </ItemGroup>
+
 </Project>

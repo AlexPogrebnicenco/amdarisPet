@@ -1,31 +1,39 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using OnlineCoursesPlatform.Application.Commands;
-using OnlineCoursesPlatform.Application.Queries;
-using OnlineCoursesPlatform.Application.Repositories;
-using OnlineCoursesPlatform.Domain.Models;
-using MediatR;
+﻿using MediatR;
+using Microsoft.Extensions.DependencyInjection;
+using OnlineCoursesPlatform.Application.Features.Users.Commands;
+using OnlineCoursesPlatform.Application.Interfaces;
+using OnlineCoursesPlatform.Domain.Entities;
+using OnlineCoursesPlatform.Infrastructure.Repositories;
+
 namespace OnlineCoursesPlatform.Presentation
 {
-    class Program
+    public class Program
     {
         static async Task Main(string[] args)
         {
+            // Создаем контейнер зависимостей
             var services = new ServiceCollection();
 
-            services.AddMediatR(typeof(Program).Assembly);
+            // Регистрируем все необходимые сервисы и обработчики MediatR
+            services.AddMediatR(typeof(CreateUserHandler).Assembly); // Регистрация обработчиков из текущей сборки
 
-            services.AddSingleton<IRepository<Course>, InMemoryRepository<Course>>();
+            // Регистрируем репозитории и сервисы
+            services.AddSingleton<IRepository<User>, InMemoryRepository<User>>();
+            services.AddSingleton<UserService>();
 
             var provider = services.BuildServiceProvider();
-            var mediator = provider.GetRequiredService<IMediator>();
+            var mediator = provider.GetService<IMediator>();
 
-            var createCourseCommand = new CreateCourseCommand("C# Programming", "Learn C# from scratch", "John Doe");
-            var createdCourse = await mediator.Send(createCourseCommand);
-            Console.WriteLine($"Created Course: {createdCourse.Title}, {createdCourse.Teacher}");
-
-            var getCourseQuery = new GetCourseByIdQuery(createdCourse.Id);
-            var course = await mediator.Send(getCourseQuery);
-            Console.WriteLine($"Fetched Course: {course.Title}, {course.Description}");
+            var createUserCommand = new CreateUser("Alex Pogreb", "alex@pogreb.com");
+            if (mediator != null)
+            {
+                var userDto = await mediator.Send(createUserCommand);
+                Console.WriteLine($"Created User: {userDto.Name}, Email: {userDto.Email}");
+            }
+            else
+            {
+                Console.WriteLine("Mediator is not initialized.");
+            }
         }
     }
 }

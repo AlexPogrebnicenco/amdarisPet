@@ -8,8 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="11.0.0" />
+    <PackageReference Include="MediatR.Contracts" Version="2.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="11.1.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\OnlineCoursesPlatform.Application\OnlineCoursesPlatform.Application.csproj" />
-    <ProjectReference Include="..\OnlineCoursesPlatform.Domain\OnlineCoursesPlatform.Domain.csproj" />
+    <ProjectReference Include="..\OnlineCoursesPlatform.Infrastructure\OnlineCoursesPlatform.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
