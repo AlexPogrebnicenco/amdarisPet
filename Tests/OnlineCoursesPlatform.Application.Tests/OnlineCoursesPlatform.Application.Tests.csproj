@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\OnlineCoursesPlatform.Application\OnlineCoursesPlatform.Application.csproj" />
+    <ProjectReference Include="..\..\src\OnlineCoursesPlatform.Infrastructure\OnlineCoursesPlatform.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

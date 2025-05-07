@@ -1,28 +1,26 @@
-﻿using Moq;
-using OnlineCoursesPlatform.Application.Features.Users.Commands;
+﻿using OnlineCoursesPlatform.Application.Features.Users.Commands;
 using OnlineCoursesPlatform.Application.Interfaces;
 using OnlineCoursesPlatform.Domain.Entities;
+using OnlineCoursesPlatform.Infrastructure.Repositories;
+using Xunit;
 
 namespace OnlineCoursesPlatform.Tests
 {
     public class CreateUserTest
     {
-        private readonly Mock<IRepository<User>> _userRepositoryMock;
+        private readonly IRepository<User> _userRepository;
         private readonly CreateUserHandler _handler;
 
         public CreateUserTest()
         {
-            _userRepositoryMock = new Mock<IRepository<User>>();
-            _handler = new CreateUserHandler(_userRepositoryMock.Object);
+            _userRepository = new InMemoryRepository<User>();
+            _handler = new CreateUserHandler(_userRepository);
         }
 
         [Fact]
         public async Task Handle_CreateUser_ShouldReturnUserDto()
         {
             var createUserCommand = new CreateUser("Alex", "alex@pogreb.com");
-            var user = new User { Id = 1, Name = createUserCommand.Name, Email = createUserCommand.Email };
-            _userRepositoryMock.Setup(repo => repo.Add(It.IsAny<User>())).Callback<User>(u => u.Id = 1); // mock Add method
-
             var result = await _handler.Handle(createUserCommand, CancellationToken.None);
 
             Assert.NotNull(result);
@@ -31,13 +29,14 @@ namespace OnlineCoursesPlatform.Tests
         }
 
         [Fact]
-        public async Task Handle_CreateUser_ShouldCallAddMethodOnce()
+        public async Task Handle_CreateUser_ShouldAddUserToRepository()
         {
             var createUserCommand = new CreateUser("Alex", "alex@pogreb.com");
-
-            await _handler.Handle(createUserCommand, CancellationToken.None);
-
-            _userRepositoryMock.Verify(repo => repo.Add(It.IsAny<User>()), Times.Once);
+            await _handler.Handle(createUserCommand,CancellationToken.None);
+            var createdUser = _userRepository.GetById(1);
+            Assert.NotNull(createdUser);
+            Assert.Equal(createUserCommand.Name, createdUser.Name);
+            Assert.Equal(createUserCommand.Email, createdUser.Email);
         }
     }
 }
