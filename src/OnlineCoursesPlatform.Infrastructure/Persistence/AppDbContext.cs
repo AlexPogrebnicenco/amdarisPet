@@ -1,6 +1,4 @@
-﻿using System.Threading.Channels;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.EntityFrameworkCore;
 using OnlineCoursesPlatform.Domain.Entities;
 
 namespace OnlineCoursesPlatform.Infrastructure.Persistence
@@ -24,7 +22,7 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence
 
         //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         //{
-        //    if(!optionsBuilder.IsConfigured)
+        //    if (!optionsBuilder.IsConfigured)
         //    {
         //        optionsBuilder
         //            .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=OnlineCoursesPlatformEF;Trusted_Connection=True;TrustServerCertificate=True")

@@ -20,4 +20,8 @@
     <ProjectReference Include="..\OnlineCoursesPlatform.Domain\OnlineCoursesPlatform.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>

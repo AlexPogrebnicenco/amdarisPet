@@ -1,8 +1,7 @@
 ﻿using MediatR;
+using OnlineCoursesPlatform.Application.Abstractions.Repositories;
 using OnlineCoursesPlatform.Application.Features.Users.Dto;
-using OnlineCoursesPlatform.Application.Interfaces;
 using OnlineCoursesPlatform.Domain.Entities;
-using OnlineCoursesPlatform.Domain.Services;
 
 namespace OnlineCoursesPlatform.Application.Features.Users.Commands
 {
@@ -10,24 +9,25 @@ namespace OnlineCoursesPlatform.Application.Features.Users.Commands
 
     public class CreateUserHandler : IRequestHandler<CreateUser, UserDto>
     {
-        private readonly IUserService _userService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CreateUserHandler(IUserService userService)
+        public CreateUserHandler(IUnitOfWork unitOfWork)
         {
-            _userService = userService;
+            _unitOfWork = unitOfWork;
         }
 
-        public Task<UserDto> Handle(CreateUser request, CancellationToken cancellationToken)
+        public async Task<UserDto> Handle(CreateUser request, CancellationToken cancellationToken)
         {
-            var user = new User() { UserName = request.Name, Email = request.Email, Id = GetNextId() };
-            _userService.Add(user);
-            return Task.FromResult(UserDto.FromUser(user));
-        }
+            var user = new User
+            {
+                UserName = request.Name,
+                Email = request.Email
+            };
 
-        private int GetNextId() 
-        {
-            return _userService.GetLastId();
+            await _unitOfWork.UserRepository.AddAsync(user);
+            await _unitOfWork.SaveAsync();
+
+            return UserDto.FromUser(user);
         }
     }
-
 }
