@@ -1,4 +1,5 @@
-﻿using OnlineCoursesPlatform.Application.Interfaces;
+﻿using Moq;
+using OnlineCoursesPlatform.Application.Interfaces;
 using OnlineCoursesPlatform.Domain.Entities;
 using OnlineCoursesPlatform.Infrastructure.Repositories;
 using Xunit;
@@ -7,57 +8,61 @@ namespace OnlineCoursesPlatform.Infrastructure.Tests.Services
 {
     public class UserServiceTests
     {
-        private readonly IRepository<User> _userRepository;
+        private readonly Mock<IRepository<User>> _userRepositoryMock;
         private readonly UserService _userService;
 
         public UserServiceTests()
         {
-            _userRepository = new InMemoryRepository<User>();
-            _userService = new UserService(_userRepository);
+            _userRepositoryMock = new Mock<IRepository<User>>();
+            _userService = new UserService(_userRepositoryMock.Object);
         }
 
         [Fact]
         public void AddUserShouldCallAddMethod()
         {
-            var user = new User { Id = 1, Name = "Alex", Email = "alex@pogreb.com" };
+            var user = new User { Id = 1, UserName = "Alex", Email = "alex@pogreb.com" };
             _userService.Add(user);
+            _userRepositoryMock.Verify(repo => repo.Add(user), Times.Once);
+        }
+        [Fact]
+        public void GetById_UserExists_ShouldReturnUser()
+        {
+            var userId = 1;
+            var user = new User { Id = userId, UserName = "Alex", Email = "alex@pogreb.com" };
+            _userRepositoryMock.Setup(repo => repo.GetById(userId)).Returns(user);
 
-            var addedUser = _userRepository.GetById(1);
+            var result = _userService.GetById(userId);
 
-            Assert.NotNull(addedUser);
-            Assert.Equal(user.Name, addedUser.Name);
-            Assert.Equal(user.Email, addedUser.Email);
+            Assert.Equal(user, result);
         }
 
         [Fact]
         public void GetById_UserDoesNotExist_ShouldThrowException()
         {
             var userId = 1;
+            _userRepositoryMock.Setup(repo => repo.GetById(userId)).Throws(new InvalidOperationException("User not found"));
 
             Assert.Throws<InvalidOperationException>(() => _userService.GetById(userId));
         }
 
         [Fact]
-        public void Update_User_ShouldUpdateUser()
+        public void Update_User_ShouldCallUpdateMethod()
         {
-            var user = new User { Id = 1, Name = "Alex", Email = "alex@pogreb.com" };
-            _userService.Add(user);
+            var user = new User { Id = 1, UserName = "Alex", Email = "alex@pogreb.com" };
 
-            var updatedUser = new User { Id = 1, Name = "Alex Updated", Email = "alex_updated@pogreb.com" };
-            _userService.Update(updatedUser);
+            _userService.Update(user);
 
-            var result = _userService.GetById(1);
-            Assert.Equal(updatedUser.Name, result.Name);
-            Assert.Equal(updatedUser.Email, result.Email);
+            _userRepositoryMock.Verify(repo => repo.Update(user), Times.Once);
         }
 
         [Fact]
-        public void Delete_User_ShouldDeleteUser()
+        public void Delete_User_ShouldCallDeleteMethod()
         {
-            var user = new User { Id = 1, Name = "Alex", Email = "alex@pogreb.com" };
-            _userService.Add(user);
-            _userService.Delete(1);
-            Assert.Throws<InvalidOperationException>(() => _userService.GetById(1));
+            var userId = 1;
+
+            _userService.Delete(userId);
+
+            _userRepositoryMock.Verify(repo => repo.Delete(userId), Times.Once);
         }
     }
 }

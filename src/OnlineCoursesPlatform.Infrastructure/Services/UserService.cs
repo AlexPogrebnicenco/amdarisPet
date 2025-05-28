@@ -1,9 +1,10 @@
 ﻿using OnlineCoursesPlatform.Application.Interfaces;
 using OnlineCoursesPlatform.Domain.Entities;
+using OnlineCoursesPlatform.Domain.Services;
 
 namespace OnlineCoursesPlatform.Infrastructure.Repositories
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IRepository<User> _repository;
 
@@ -36,5 +37,11 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
         {
             _repository.Update(entity);
         }
+
+        public int GetLastId()
+        {
+            return _repository.GetLastId();
+        }
+
     }
 }

@@ -1,13 +1,15 @@
 ﻿namespace OnlineCoursesPlatform.Domain.Entities
 {
-    public class Review
+    public class Certificate
     {
         public int Id { get; set; }
-        public required string VoterName { get; set; }
-        public short NumStars { get; set; }
-        public required string Comment { get; set; }
+
+        public int UserId { get; set; }
+        public User? User { get; set; }
 
         public int CourseId { get; set; }
         public Course? Course { get; set; }
+        
+        public DateTime IssuedAt { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using OnlineCoursesPlatform.Application.Features.Users.Dto;
 using OnlineCoursesPlatform.Application.Interfaces;
 using OnlineCoursesPlatform.Domain.Entities;
+using OnlineCoursesPlatform.Domain.Services;
 
 namespace OnlineCoursesPlatform.Application.Features.Users.Commands
 {
@@ -9,23 +10,23 @@ namespace OnlineCoursesPlatform.Application.Features.Users.Commands
 
     public class CreateUserHandler : IRequestHandler<CreateUser, UserDto>
     {
-        private readonly IRepository<User> _userRepository;
+        private readonly IUserService _userService;
 
-        public CreateUserHandler(IRepository<User> userRepository)
+        public CreateUserHandler(IUserService userService)
         {
-            _userRepository = userRepository;
+            _userService = userService;
         }
 
         public Task<UserDto> Handle(CreateUser request, CancellationToken cancellationToken)
         {
-            var user = new User() { Name = request.Name, Email = request.Email, Id = GetNextId() };
-            _userRepository.Add(user);
+            var user = new User() { UserName = request.Name, Email = request.Email, Id = GetNextId() };
+            _userService.Add(user);
             return Task.FromResult(UserDto.FromUser(user));
         }
 
         private int GetNextId() 
         {
-            return _userRepository.GetLastId();
+            return _userService.GetLastId();
         }
     }
 

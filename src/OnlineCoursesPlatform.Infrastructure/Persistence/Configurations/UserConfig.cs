@@ -1,0 +1,24 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using OnlineCoursesPlatform.Domain.Entities;
+
+namespace OnlineCoursesPlatform.Infrastructure.Persistence.Configurations
+{
+    public class UserConfig : IEntityTypeConfiguration<User>
+    {
+        public void Configure(EntityTypeBuilder<User> builder)
+        {
+            builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.UserName)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.Property(x => x.Email)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.HasIndex(x => x.Email).IsUnique();
+        }
+    }
+}

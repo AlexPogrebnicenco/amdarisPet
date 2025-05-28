@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OnlineCoursesPlatform.Application.Features.Users.Commands;
 using OnlineCoursesPlatform.Application.Interfaces;
 using OnlineCoursesPlatform.Domain.Entities;
+using OnlineCoursesPlatform.Domain.Services;
 using OnlineCoursesPlatform.Infrastructure.Repositories;
 
 namespace OnlineCoursesPlatform.Presentation
@@ -19,7 +20,8 @@ namespace OnlineCoursesPlatform.Presentation
 
             // Регистрируем репозитории и сервисы
             services.AddSingleton<IRepository<User>, InMemoryRepository<User>>();
-            services.AddSingleton<UserService>();
+            services.AddSingleton<IUserService, UserService>();
+
 
             var provider = services.BuildServiceProvider();
             var mediator = provider.GetService<IMediator>();
@@ -28,7 +30,7 @@ namespace OnlineCoursesPlatform.Presentation
             if (mediator != null)
             {
                 var userDto = await mediator.Send(createUserCommand);
-                Console.WriteLine($"Created User: {userDto.Name}, Email: {userDto.Email}");
+                Console.WriteLine($"Created User: {userDto.UserName}, Email: {userDto.Email}");
             }
             else
             {

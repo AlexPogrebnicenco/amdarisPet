@@ -11,16 +11,19 @@ namespace OnlineCoursesPlatform.Application.Features.Courses.Dto
         public required ICollection<Review> Reviews { get; set; }
         public DateTime DateCreated { get; set; }
 
-        public static CourseDto FromCourse(Course course)
-        {
-            return new CourseDto
-            {
-                Id = course.Id,
-                Title = course.Title,
-                Description = course.Description,
-                Teachers = course.Teachers,
-                Reviews = course.Reviews
-            };
-        }
+        //public static CourseDto FromCourse(Course course)
+        //{
+        //    return new CourseDto
+        //    {
+        //        Id = course.Id,
+        //        Title = course.Title,
+        //        Description = course.Description,
+        //        Teachers = course.CourseTeachers
+        //            .Where(ct => ct.Teacher != null)
+        //            .Select(ct => ct.Teacher)
+        //            .ToList(),
+        //        Reviews = course.Reviews.ToList()
+        //    };
+        //}
     }
 }
