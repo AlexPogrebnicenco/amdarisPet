@@ -19,7 +19,6 @@
 
   <ItemGroup>
     <Folder Include="Features\Courses\Queries\" />
-    <Folder Include="Features\Teachers\" />
   </ItemGroup>
 
 </Project>
