@@ -18,10 +18,10 @@ class Program
         var mediator = provider.GetRequiredService<IMediator>();
         var unitOfWork = provider.GetRequiredService<IUnitOfWork>();
 
-        var result = await mediator.Send(new CreateUser("vasea", "vasea@example.com"));
+        var result = await mediator.Send(new CreateUser("vasea", "ggg@example.com"));
         await unitOfWork.SaveAsync();
 
-        var user = await unitOfWork.UserRepository.GetByEmailAsync("vasea@example.com");
+        var user = await unitOfWork.UserRepository.GetByEmailAsync("ggg@example.com");
 
         var users = await mediator.Send(new GetAllUsers(pageNumber: 1, pageSize: 20));
 
