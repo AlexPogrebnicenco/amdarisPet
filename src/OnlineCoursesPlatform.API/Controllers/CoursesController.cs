@@ -5,7 +5,7 @@ using OnlineCoursesPlatform.Domain.Entities;
 namespace OnlineCoursesPlatform.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api")]
 public class CoursesController : ControllerBase
 {
     private static readonly List<Course> courses = new()
@@ -15,12 +15,14 @@ public class CoursesController : ControllerBase
     };
 
     [HttpGet]
+    [Route ("courses")]
     public IActionResult GetAll()
     {
         return Ok(courses.Select(CourseDto.FromCourse));
     }
 
-    [HttpGet("{id}")]
+    [HttpGet]
+    [Route ("course/{id}")]
     public IActionResult GetById(int id)
     {
         var course = courses.FirstOrDefault(c => c.Id == id);
@@ -29,6 +31,7 @@ public class CoursesController : ControllerBase
     }
 
     [HttpPost]
+    [Route ("course")]
     public IActionResult Create([FromBody] CreateCourseDto dto)
     {
         var course = new Course
@@ -44,7 +47,8 @@ public class CoursesController : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = course.Id }, CourseDto.FromCourse(course));
     }
 
-    [HttpPut("{id}")]
+    [HttpPut]
+    [Route("course/{id}")]
     public IActionResult Update(int id, [FromBody] CreateCourseDto dto)
     {
         var course = courses.FirstOrDefault(c => c.Id == id);
@@ -57,7 +61,8 @@ public class CoursesController : ControllerBase
         return Ok(CourseDto.FromCourse(course));
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete]
+    [Route("course/{id}")]
     public IActionResult Delete(int id)
     {
         var course = courses.FirstOrDefault(c => c.Id == id);
