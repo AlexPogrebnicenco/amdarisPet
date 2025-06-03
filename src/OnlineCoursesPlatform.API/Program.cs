@@ -1,3 +1,5 @@
+using OnlineCoursesPlatform.API.Middleware;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
@@ -16,6 +18,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<RequestTimingMiddleware>();
+
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
