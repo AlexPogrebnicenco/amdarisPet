@@ -6,7 +6,10 @@ public static class ApplicationDI
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddMediatR(typeof(CreateUser).Assembly);
+        services.AddMediatR(cfg => 
+        {
+            cfg.RegisterServicesFromAssembly(typeof(CreateUser).Assembly); 
+        });
 
         return services;
     }

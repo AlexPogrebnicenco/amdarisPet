@@ -18,8 +18,4 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\src\OnlineCoursesPlatform.Presentation\OnlineCoursesPlatform.Presentation.csproj" />
-  </ItemGroup>
-
 </Project>
