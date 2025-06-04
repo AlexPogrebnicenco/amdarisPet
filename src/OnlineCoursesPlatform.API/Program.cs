@@ -15,6 +15,8 @@ builder.Services.AddSwaggerGen();
 // Register App + Infra Layers
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
+builder.Services.AddLogging();
+
 
 var app = builder.Build();
 
@@ -32,4 +34,3 @@ app.UseMiddleware<RequestTimingMiddleware>();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
-

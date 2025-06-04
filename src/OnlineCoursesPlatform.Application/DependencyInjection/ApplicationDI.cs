@@ -1,16 +1,13 @@
-﻿using MediatR;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using OnlineCoursesPlatform.Application.DependencyInjection;
 using OnlineCoursesPlatform.Application.Features.Users.Commands;
 
 public static class ApplicationDI
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => 
-        {
-            cfg.RegisterServicesFromAssembly(typeof(CreateUser).Assembly); 
-        });
-
+        services.AddMediatRService();
+        services.AddAutoMapperServices();
         return services;
     }
 }

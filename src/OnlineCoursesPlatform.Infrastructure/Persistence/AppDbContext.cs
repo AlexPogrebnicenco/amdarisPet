@@ -20,17 +20,6 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence
         public DbSet<CourseTag> CourseTags => Set<CourseTag>();
         public DbSet<CourseTeacher> CourseTeachers => Set<CourseTeacher>();
 
-        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        //{
-        //    if (!optionsBuilder.IsConfigured)
-        //    {
-        //        optionsBuilder
-        //            .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=OnlineCoursesPlatformEF;Trusted_Connection=True;TrustServerCertificate=True")
-        //            .LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name },
-        //                LogLevel.Information);
-        //    }
-        //}
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

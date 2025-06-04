@@ -41,7 +41,7 @@ public class UsersController : ControllerBase
     [Route ("user")]
     public async Task<IActionResult> Create([FromBody] CreateUserDto dto)
     {
-        var result = await _mediator.Send(new CreateUser(dto.UserName, dto.Email));
+        var result = await _mediator.Send(new CreateUser(dto));
         return CreatedAtAction(nameof(GetById), new {id = result.Id}, result);
     }
 
@@ -49,7 +49,7 @@ public class UsersController : ControllerBase
     [Route("user/{id}")]
     public async Task<IActionResult> Update(int id, [FromBody] UpdateUserDto dto)
     {
-        var result = await _mediator.Send(new UpdateUser(id, dto.UserName, dto.Email));
+        var result = await _mediator.Send(new UpdateUser(id, dto));
         if (result == null)
             return NotFound();
         return Ok(result);
