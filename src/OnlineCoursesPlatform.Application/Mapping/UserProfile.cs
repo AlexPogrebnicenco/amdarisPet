@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using OnlineCoursesPlatform.Application.Features.Users.Commands;
 using OnlineCoursesPlatform.Application.Features.Users.Dto;
 using OnlineCoursesPlatform.Domain.Entities;
 
@@ -11,7 +10,7 @@ namespace OnlineCoursesPlatform.Application.Mapping
         {
             // Entity -> DTO
             CreateMap<User, UserDto>();
-            //CreateUser -> Entity
+            //DTO -> Entity
             CreateMap<CreateUserDto, User>();
             CreateMap<UpdateUserDto, User>();
         }

@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace OnlineCoursesPlatform.API.Middleware
+namespace OnlineCoursesPlatform.API.Middlewares
 {
     public class RequestTimingMiddleware
     {

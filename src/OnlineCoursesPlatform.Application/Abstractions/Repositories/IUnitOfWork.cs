@@ -7,6 +7,18 @@ namespace OnlineCoursesPlatform.Application.Abstractions.Repositories
     public interface IUnitOfWork
     {
         IUserRepository UserRepository { get; }
+        ICategoryRepository CategoryRepository { get; }
+        ICertificateRepository CertificateRepository { get; }
+        ICourseRepository CourseRepository { get; }
+        ICourseTagRepository CourseTagRepository { get; }
+        ICourseTeacherRepository CourseTeacherRepository { get; }
+        IEnrollmentRepository EnrollmentRepository { get;}
+        ILessonRepository LessonRepository { get; }
+        IProgressRecordRepository ProgressRecordRepository { get; }
+        IReviewRepository ReviewRepository { get; }
+        ITagRepository TagRepository { get; }
+        ITeacherRepository TeacherRepository { get; }
+
         Task SaveAsync();
         Task BeginTransactionAsync();
         Task CommitTransactionAsync();

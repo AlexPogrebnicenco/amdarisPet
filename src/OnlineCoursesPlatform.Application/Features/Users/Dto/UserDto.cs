@@ -1,6 +1,4 @@
-﻿using OnlineCoursesPlatform.Domain.Entities;
-
-namespace OnlineCoursesPlatform.Application.Features.Users.Dto
+﻿namespace OnlineCoursesPlatform.Application.Features.Users.Dto
 {
     public class UserDto
     {

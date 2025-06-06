@@ -1,13 +1,16 @@
 using MediatR;
-using OnlineCoursesPlatform.API.Middleware;
+using OnlineCoursesPlatform.API.Middlewares;
 using OnlineCoursesPlatform.Application;
 using OnlineCoursesPlatform.Infrastructure;
 using OnlineCoursesPlatform.Application.Features.Users.Commands;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using OnlineCoursesPlatform.API.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
 builder.Services.AddControllers();
+builder.Services.AddSingleton<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/apsnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -21,6 +24,8 @@ builder.Services.AddLogging();
 var app = builder.Build();
 
 //Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

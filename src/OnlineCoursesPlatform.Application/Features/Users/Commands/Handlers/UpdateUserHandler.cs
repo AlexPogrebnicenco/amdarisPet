@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using OnlineCoursesPlatform.Application.Abstractions.Repositories;
+using OnlineCoursesPlatform.Application.Common.Exceptions;
 using OnlineCoursesPlatform.Application.Features.Users.Dto;
 
 namespace OnlineCoursesPlatform.Application.Features.Users.Commands.Handlers
@@ -27,7 +28,7 @@ namespace OnlineCoursesPlatform.Application.Features.Users.Commands.Handlers
             if (user == null)
             {
                 _logger.LogWarning("User with ID: {UserId} not found", request.Id);
-                return null;
+                throw new NotFoundException($"User with ID {request.Id} not found");
             }
 
             _mapper.Map(request.Dto, user);

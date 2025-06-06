@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using OnlineCoursesPlatform.Application.Abstractions.Repositories;
+using OnlineCoursesPlatform.Application.Common.Exceptions;
+using OnlineCoursesPlatform.Domain.Entities;
 
 namespace OnlineCoursesPlatform.Application.Features.Users.Commands.Handlers
 {
@@ -23,7 +25,7 @@ namespace OnlineCoursesPlatform.Application.Features.Users.Commands.Handlers
             if (user == null)
             {
                 _logger.LogWarning("User with ID: {UserId} not found", request.Id);
-                return false;
+                throw new NotFoundException($"User with ID {request.Id} not found");
             }
 
             await _unitOfWork.UserRepository.RemoveAsync(user);
