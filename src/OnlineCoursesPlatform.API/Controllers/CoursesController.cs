@@ -10,7 +10,7 @@ public class CoursesController : ControllerBase
 {
     private static readonly List<Course> courses = new()
     {
-        new Course { Id = 1, Title = "Intro to C#", Description = "Learn C# basics", DateCreated = DateTime.UtcNow, DateModified = DateTime.UtcNow },
+        new Course { Id = 1, Title = "Intrs to C#", Description = "Learn C# basics", DateCreated = DateTime.UtcNow, DateModified = DateTime.UtcNow },
         new Course { Id = 2, Title = "ASP.NET Core", Description = "Web development with ASP.NET", DateCreated = DateTime.UtcNow, DateModified = DateTime.UtcNow }
     };
 
