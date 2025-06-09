@@ -4,9 +4,10 @@ using OnlineCoursesPlatform.Application.Features.Users.Dto;
 using OnlineCoursesPlatform.Application.Features.Users.Commands;
 using OnlineCoursesPlatform.Domain.Entities;
 using OnlineCoursesPlatform.Application.Features.Users.Queries;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OnlineCoursesPlatform.API.Controllers;
-
+[Authorize]
 [ApiController]
 [Route("api")]
 public class UsersController : ControllerBase

@@ -28,7 +28,7 @@ namespace OnlineCoursesPlatform.Application.Tests.Features.Users.Queries
 
         public GetUserByIdHandlerTests()
         {
-            _user = new User { Id = _userId, UserName = "Test", Email = "test@example.com" };
+            _user = new User { Id = _userId, UserName = "Test", Email = "test@example.com" , Password = "stub" };
             _userDto = new UserDto { Id = _userId, UserName = "Test", Email = "test@example.com" };
             _request = new GetUserById(_userId);
 

@@ -31,6 +31,7 @@ public class ExceptionHandlingMiddleware
                 ValidationException => HttpStatusCode.BadRequest,
                 ConflictException => HttpStatusCode.Conflict,
                 UnauthorizedException => HttpStatusCode.Unauthorized,
+                UnauthenticatedException => HttpStatusCode.Unauthorized,
                 ForbiddenException => HttpStatusCode.Forbidden,
                 BadRequestException => HttpStatusCode.BadRequest,
                 _ => HttpStatusCode.InternalServerError

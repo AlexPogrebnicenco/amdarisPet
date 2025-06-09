@@ -41,8 +41,8 @@ namespace OnlineCoursesPlatform.Application.Tests.Features.Users.Queries
             // Arrange 
             var users = new List<User>
             {
-                new User { Id = 1, UserName = "User1", Email = "user1@example.com" },
-                new User { Id = 2, UserName = "User2", Email = "user2@example.com" }
+                new User { Id = 1, UserName = "User1", Email = "user1@example.com", Password = "stub" },
+                new User { Id = 2, UserName = "User2", Email = "user2@example.com" , Password = "stub"}
             };
 
             var userDtos = new List<UserDto>
@@ -89,7 +89,7 @@ namespace OnlineCoursesPlatform.Application.Tests.Features.Users.Queries
         public async Task WhenHandleCalled_ThenLogsRequesrAndResult()
         {
             // Arrange 
-            var users = new List<User> { new User { Id = 1, UserName = "User1", Email = "user1@example.com" } };
+            var users = new List<User> { new User { Id = 1, UserName = "User1", Email = "user1@example.com" , Password = "stub" } };
             var userDtos = new List<UserDto> { new UserDto { UserName = "User1", Email = "user1@example.com" } };
 
             _mockUserRepo.Setup(r => r.GetAllAsync(_pageNumber, _pageSize)).ReturnsAsync(users);

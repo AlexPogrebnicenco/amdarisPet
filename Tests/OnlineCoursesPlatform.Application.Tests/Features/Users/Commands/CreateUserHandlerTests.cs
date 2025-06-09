@@ -31,7 +31,7 @@ namespace OnlineCoursesPlatform.Application.Tests.Features.Users.Commands
         {
             _requestDto = new CreateUserDto { UserName = "Test", Email = "test@example.com" };
             _request = new CreateUser(_requestDto);
-            _user = new User { Id = 1, UserName = "Test", Email = "test@example.com" };
+            _user = new User { Id = 1, UserName = "Test", Email = "test@example.com", Password = "stub" };
             _userDto = new UserDto { Id = 1, UserName = "Test", Email = "test@example.com" };
 
             _mockUserRepo = new Mock<IUserRepository>();

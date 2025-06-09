@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react';
-import { AppBar, Toolbar, Container, IconButton, Typography, Box } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
+import { AppBar, Toolbar, Container, Typography, Box } from '@mui/material';
 import { Button } from '@mui/material';
+import NavigationDrawer from '../components/NavigationDrawer';
+
 
 interface MainLayoutProps {
   children: ReactNode;
@@ -11,24 +12,25 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   return (
     <>
       <AppBar position="fixed">
-        <Container fixed>
-            <Toolbar>
-                <IconButton edge="start" 
-                color="inherit" aria-label='menu'>
-                    <MenuIcon />
-                </IconButton>
-                <Typography variant='h6'>Online Courses Platform</Typography>
-                <Box mr={3}>
-                    <Button color="inherit" variant="outlined">Log In</Button>
-                </Box>
-                <Button color="secondary" variant="contained">Sign Up</Button>
-            </Toolbar>
-        </Container>
-      </AppBar>
+  <Container fixed>
+    <Toolbar>
+      <NavigationDrawer /> {/* ← иконка меню */}
+      <Typography variant='h6' sx={{ flexGrow: 1, marginLeft: 2 }}>
+        Online Courses Platform
+      </Typography>
+      <Box mr={2}>
+        <Button color="inherit" variant="outlined">Log In</Button>
+      </Box>
+      <Button color="secondary" variant="contained">Sign Up</Button>
+    </Toolbar>
+  </Container>
+</AppBar>
 
-      <Container sx={{ mt: 4 }}>
-        {children}
-      </Container>
+
+      <Container sx={{ mt: 10 }}>
+  {children}
+</Container>
+
     </>
   );
 };

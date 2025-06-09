@@ -30,7 +30,7 @@ namespace OnlineCoursesPlatform.Application.Tests.Features.Users.Commands
         public UpdateUserHandlerTests()
         {
             _request = new UpdateUser(_userId, _dto);
-            _user = new User { Id = _userId, UserName = "Old", Email = "old@example.com" };
+            _user = new User { Id = _userId, UserName = "Old", Email = "old@example.com", Password = "stub" };
             _userDto = new UserDto { Id = _userId, UserName = "Updated", Email = "updated@example.com" };
 
             _mockUserRepo = new Mock<IUserRepository>();

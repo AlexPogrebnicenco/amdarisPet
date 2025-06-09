@@ -21,7 +21,7 @@ namespace OnlineCoursesPlatform.Application.Tests.Features.Users.Commands
 
         public DeleteUserHandlerTests()
         {
-            _user = new User { Id = _userId, UserName = "Test", Email = "test@example.com" };
+            _user = new User { Id = _userId, UserName = "Test", Email = "test@example.com", Password = "stub" };
             _request = new DeleteUser(_userId);
 
             _mockUserRepo = new Mock<IUserRepository>();

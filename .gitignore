@@ -1,4 +1,12 @@
+# Build and VS files
 .vs/
 bin/
 obj/
 **/*.user
+*.suo
+
+# User secrets and config
+.env
+src/OnlineCoursesPlatform.API/appsettings.json
+src/OnlineCoursesPlatform.API/appsettings.Development.json
+

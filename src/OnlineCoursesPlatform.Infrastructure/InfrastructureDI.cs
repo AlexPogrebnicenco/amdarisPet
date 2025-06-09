@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using OnlineCoursesPlatform.Application.Abstractions.Repositories;
+using OnlineCoursesPlatform.Application.Abstractions.Security;
 using OnlineCoursesPlatform.Application.Interfaces.Repositories;
 using OnlineCoursesPlatform.Infrastructure.Persistence;
 using OnlineCoursesPlatform.Infrastructure.Repositories;
+using OnlineCoursesPlatform.Infrastructure.Security;
 
 public static class InfrastructureDI
 {
@@ -26,7 +28,10 @@ public static class InfrastructureDI
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<ITeacherRepository, TeacherRepository>();
-   
+
+        services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
+        services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
         return services;
     }
 }
