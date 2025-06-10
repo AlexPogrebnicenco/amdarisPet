@@ -81,4 +81,12 @@ public class AuthController : ControllerBase
 
         return Ok(authResult);
     }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto dto)
+    {
+        var result = await _mediator.Send(new RefreshTokenCommand(dto));
+        return Ok(result);
+    }
+
 }

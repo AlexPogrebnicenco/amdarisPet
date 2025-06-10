@@ -28,6 +28,7 @@ public static class InfrastructureDI
         services.AddScoped<IReviewRepository, ReviewRepository>();
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<ITeacherRepository, TeacherRepository>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();

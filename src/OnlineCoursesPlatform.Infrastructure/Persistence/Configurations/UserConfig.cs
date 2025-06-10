@@ -18,6 +18,10 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(100);
 
+            builder.Property(u => u.ExternalProvider)
+               .HasMaxLength(50)
+               .IsRequired(false);
+
             builder.HasIndex(x => x.Email).IsUnique();
         }
     }

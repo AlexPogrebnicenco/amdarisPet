@@ -4,6 +4,7 @@ using OnlineCoursesPlatform.Application.Abstractions.Repositories;
 using OnlineCoursesPlatform.Application.Abstractions.Security;
 using OnlineCoursesPlatform.Application.Common.Exceptions;
 using OnlineCoursesPlatform.Application.Features.Auth.Dto;
+using OnlineCoursesPlatform.Domain.Entities;
 
 namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
 {
@@ -38,20 +39,45 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
                 throw new UnauthenticatedException("Invalid credentials");
             }
 
+            if (!string.IsNullOrEmpty(user.ExternalProvider))
+            {
+                _logger.LogWarning("Login failed: user with email {Email} registered via {Provider}", dto.Email, user.ExternalProvider);
+                throw new UnauthenticatedException($"This account is linked to {user.ExternalProvider}. Use {user.ExternalProvider} login.");
+            }
+
+            if (user.Password == null)
+            {
+                _logger.LogError("Login failed: user {Email} has no password set, but is not an external provider.", dto.Email);
+                throw new UnauthenticatedException("Invalid credentials"); 
+            }
+
             if (!_passwordHasher.Verify(dto.Password, user.Password))
             {
                 _logger.LogWarning("Login failed: invalid password for email {Email}", dto.Email);
                 throw new UnauthenticatedException("Invalid credentials");
             }
 
-            var token = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName);
+            var accessToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName);
+
+            var refreshToken = new RefreshToken
+            {
+                UserId = user.Id,
+                Token = Guid.NewGuid().ToString(),
+                ExpiresAt = DateTime.UtcNow.AddDays(7),
+                IsRevoked = false
+            };
+
+            await _unitOfWork.RefreshTokenRepository.AddAsync(refreshToken);
+            await _unitOfWork.SaveAsync();
 
             return new AuthResultDto
             {
+                AccessToken = accessToken,
+                AccessTokenExpiration = DateTime.UtcNow.AddMinutes(60),
+                RefreshToken = refreshToken.Token,
+                RefreshTokenExpiration = refreshToken.ExpiresAt,
                 Email = user.Email,
-                UserName = user.UserName,
-                Token = token,
-                Expiration = DateTime.UtcNow.AddMinutes(60),
+                UserName = user.UserName
             };
         }
     }

@@ -10,6 +10,8 @@
         public int? Age { get; set; }
         public string? Gender { get; set; }
 
+        public string? ExternalProvider { get; set; }
+
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();   
         public ICollection<ProgressRecord> ProgressRecords { get; set; } = new List<ProgressRecord>();

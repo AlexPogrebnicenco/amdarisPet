@@ -19,6 +19,8 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence
         public DbSet<Tag> Tags => Set<Tag>();
         public DbSet<CourseTag> CourseTags => Set<CourseTag>();
         public DbSet<CourseTeacher> CourseTeachers => Set<CourseTeacher>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -37,6 +37,7 @@ public class CreateUserFromGoogleHandler : IRequestHandler<CreateUserFromGoogle,
         if (user == null)
         {
             user = _mapper.Map<User>(dto);
+            user.ExternalProvider = "Google";
             await _unitOfWork.UserRepository.AddAsync(user);
             await _unitOfWork.SaveAsync();
 
@@ -47,14 +48,30 @@ public class CreateUserFromGoogleHandler : IRequestHandler<CreateUserFromGoogle,
             _logger.LogInformation("Google user already exists: {Email}", user.Email);
         }
 
-        var token = _tokenGenerator.GenerateToken(user.Id, user.Email, user.UserName);
+        var now = DateTime.UtcNow;
+        var accessTokenExpiration = now.AddMinutes(60);
+        var refreshTokenExpiration = now.AddDays(7);
+
+        var accessToken = _tokenGenerator.GenerateToken(user.Id, user.Email, user.UserName);
+        var refreshToken = new RefreshToken
+        {
+            UserId = user.Id,
+            Token = Guid.NewGuid().ToString(),
+            ExpiresAt = refreshTokenExpiration,
+            IsRevoked = false
+        };
+
+        await _unitOfWork.RefreshTokenRepository.AddAsync(refreshToken);
+        await _unitOfWork.SaveAsync();
 
         return new AuthResultDto
         {
-            Token = token,
+            AccessToken = accessToken,
+            AccessTokenExpiration = accessTokenExpiration,
+            RefreshToken = refreshToken.Token,
+            RefreshTokenExpiration = refreshToken.ExpiresAt,
             Email = user.Email,
-            UserName = user.UserName,
-            Expiration = DateTime.UtcNow.AddMinutes(60)
+            UserName = user.UserName
         };
     }
 }

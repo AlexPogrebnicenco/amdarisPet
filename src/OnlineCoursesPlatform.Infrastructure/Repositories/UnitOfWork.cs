@@ -20,7 +20,8 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
             IProgressRecordRepository progressRecordRepository,
             IReviewRepository reviewRepository,
             ITagRepository tagRepository,
-            ITeacherRepository teacherRepository
+            ITeacherRepository teacherRepository,
+            IRefreshTokenRepository refreshTokenRepository
             )
         {
             _context = context;
@@ -36,6 +37,7 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
             ReviewRepository = reviewRepository;
             TagRepository = tagRepository;
             TeacherRepository = teacherRepository;
+            RefreshTokenRepository = refreshTokenRepository;
         }
 
         public IUserRepository UserRepository { get; private set; }
@@ -50,6 +52,8 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
         public IReviewRepository ReviewRepository { get; private set; }
         public ITagRepository TagRepository { get; private set; }
         public ITeacherRepository TeacherRepository { get; private set; }
+        public IRefreshTokenRepository RefreshTokenRepository { get; }
+
 
 
         public async Task BeginTransactionAsync()

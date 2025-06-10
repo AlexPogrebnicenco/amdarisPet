@@ -18,6 +18,8 @@ namespace OnlineCoursesPlatform.Application.Abstractions.Repositories
         IReviewRepository ReviewRepository { get; }
         ITagRepository TagRepository { get; }
         ITeacherRepository TeacherRepository { get; }
+        IRefreshTokenRepository RefreshTokenRepository { get; }
+
 
         Task SaveAsync();
         Task BeginTransactionAsync();
