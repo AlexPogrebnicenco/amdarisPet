@@ -29,9 +29,14 @@ public static class InfrastructureDI
         services.AddScoped<ITagRepository, TagRepository>();
         services.AddScoped<ITeacherRepository, TeacherRepository>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        services.AddScoped<ITeacherRegistrationRequestRepository, TeacherRegistrationRequestRepository>();
+        services.AddScoped<ISetPasswordTokenRepository, SetPasswordTokenRepository>();
+
 
         services.AddScoped<IPasswordHasher, BCryptPasswordHasher>();
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+        
 
         return services;
     }

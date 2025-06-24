@@ -1,16 +1,7 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LoginPage from './pages/LoginPage';
-import CoursesPage from './pages/CoursesPage';
+import { AppRoutes } from './router/Routes';
 
-function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/login' element={<LoginPage />}/>
-        <Route path='/courses' element={<CoursesPage />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
+const App = () => {
+    return <AppRoutes />
+};
 
 export default App;

@@ -1,10 +1,15 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.tsx'
+import { createRoot } from "react-dom/client";
+import "./index.css";
+import App from "./App.tsx";
+import { BrowserRouter } from "react-router-dom";
+import { ThemeProvider } from "@emotion/react";
+import { theme } from "./theme/theme.ts"
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+
+createRoot(document.getElementById("root")!).render(
+  <ThemeProvider theme={theme}>
+  <BrowserRouter>
     <App />
-  </StrictMode>,
-)
+  </BrowserRouter>
+  </ThemeProvider>
+);

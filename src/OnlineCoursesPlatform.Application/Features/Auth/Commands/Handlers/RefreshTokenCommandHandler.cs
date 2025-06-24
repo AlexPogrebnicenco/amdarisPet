@@ -7,7 +7,7 @@ using OnlineCoursesPlatform.Domain.Entities;
 
 namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
 {
-    public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResultDto>
+    public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, AuthResponse>
     {
         private readonly IRefreshTokenRepository _refreshTokenRepository;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
@@ -26,7 +26,7 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<AuthResultDto> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
+        public async Task<AuthResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
         {
             var dto = request.Dto;
             var storedToken = await _refreshTokenRepository.GetByTokenAsync(dto.RefreshToken);
@@ -42,7 +42,7 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             await _refreshTokenRepository.RevokeAsync(storedToken);
 
 
-            var newAccessToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName);
+            var newAccessToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName, user.Role);
             var newRefreshToken = new RefreshToken
             {
                 Token = Guid.NewGuid().ToString(),
@@ -54,14 +54,12 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             await _refreshTokenRepository.AddAsync(newRefreshToken);
             await _unitOfWork.SaveAsync();
 
-            return new AuthResultDto
+            return new AuthResponse
             {
                 AccessToken = newAccessToken,
                 AccessTokenExpiration = DateTime.UtcNow.AddMinutes(60),
                 RefreshToken = newRefreshToken.Token,
                 RefreshTokenExpiration = newRefreshToken.ExpiresAt,
-                Email = user.Email,
-                UserName = user.UserName
             };
         }
     }

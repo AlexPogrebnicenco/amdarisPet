@@ -8,6 +8,7 @@
         public string ConfirmPassword { get; set; } = null!;
         public int Age { get; set; }
         public string Gender { get; set; } = null!;
+        public string Role { get; set; } = null!;
     }
 
 }

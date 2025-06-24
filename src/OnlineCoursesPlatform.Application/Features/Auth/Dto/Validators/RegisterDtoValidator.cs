@@ -4,7 +4,7 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Dto.Validators
 {
     public class RegisterDtoValidator : AbstractValidator<RegisterDto>
     {
-        public RegisterDtoValidator() 
+        public RegisterDtoValidator()
         {
             RuleFor(x => x.UserName)
                 .NotEmpty().WithMessage("User name is required.")
@@ -30,6 +30,11 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Dto.Validators
 
             RuleFor(x => x.Gender)
                 .NotEmpty().WithMessage("Gender is required.");
+
+            RuleFor(x => x.Role)
+                .NotEmpty().WithMessage("Role is required.")
+                .Must(role => role == "User" || role == "Teacher" || role == "SuperAdmin")
+                .WithMessage("Role must be either 'User', 'Teacher', or 'SuperAdmin'.");
         }
     }
 }

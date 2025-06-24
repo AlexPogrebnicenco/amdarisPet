@@ -21,7 +21,9 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
             IReviewRepository reviewRepository,
             ITagRepository tagRepository,
             ITeacherRepository teacherRepository,
-            IRefreshTokenRepository refreshTokenRepository
+            IRefreshTokenRepository refreshTokenRepository,
+            ITeacherRegistrationRequestRepository teacherRegistrationRequestRepository,
+            ISetPasswordTokenRepository setPasswordTokenRepository
             )
         {
             _context = context;
@@ -38,6 +40,8 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
             TagRepository = tagRepository;
             TeacherRepository = teacherRepository;
             RefreshTokenRepository = refreshTokenRepository;
+            TeacherRegistrationRequestRepository = teacherRegistrationRequestRepository;
+            SetPasswordTokenRepository = setPasswordTokenRepository;
         }
 
         public IUserRepository UserRepository { get; private set; }
@@ -53,6 +57,10 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
         public ITagRepository TagRepository { get; private set; }
         public ITeacherRepository TeacherRepository { get; private set; }
         public IRefreshTokenRepository RefreshTokenRepository { get; }
+
+        public ITeacherRegistrationRequestRepository TeacherRegistrationRequestRepository { get; private set; }
+
+        public ISetPasswordTokenRepository SetPasswordTokenRepository { get; private set; }
 
 
 

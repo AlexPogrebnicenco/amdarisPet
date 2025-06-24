@@ -20,6 +20,9 @@ namespace OnlineCoursesPlatform.Application.Abstractions.Repositories
         ITeacherRepository TeacherRepository { get; }
         IRefreshTokenRepository RefreshTokenRepository { get; }
 
+        ITeacherRegistrationRequestRepository TeacherRegistrationRequestRepository { get; }
+        ISetPasswordTokenRepository SetPasswordTokenRepository { get; }
+
 
         Task SaveAsync();
         Task BeginTransactionAsync();

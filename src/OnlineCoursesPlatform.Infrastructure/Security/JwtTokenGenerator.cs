@@ -1,4 +1,5 @@
-﻿using System.IdentityModel.Tokens.Jwt;
+﻿using System.Data;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.Extensions.Configuration;
@@ -16,13 +17,14 @@ namespace OnlineCoursesPlatform.Infrastructure.Security
             _configuration = configuration;
         }
 
-        public string GenerateToken(int userId, string email, string userName) 
+        public string GenerateToken(int userId, string email, string userName, string role)
         {
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, userId.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, email),
-                new Claim("username", userName)
+                new Claim("username", userName),
+                new Claim(ClaimTypes.Role, role)
             };
 
             var secretKey = _configuration["JwtSettings:Secret"];
@@ -38,6 +40,11 @@ namespace OnlineCoursesPlatform.Infrastructure.Security
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string GenerateRefreshToken()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
 }

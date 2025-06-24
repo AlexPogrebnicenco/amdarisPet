@@ -8,7 +8,7 @@ using OnlineCoursesPlatform.Domain.Entities;
 
 namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
 {
-    public class LoginUserHandler : IRequestHandler<LoginUser, AuthResultDto>
+    public class LoginUserHandler : IRequestHandler<LoginUser, AuthResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IPasswordHasher _passwordHasher;
@@ -28,7 +28,7 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             _logger = logger;
         }
 
-        public async Task<AuthResultDto> Handle(LoginUser request, CancellationToken cancellationToken)
+        public async Task<AuthResponse> Handle(LoginUser request, CancellationToken cancellationToken)
         {
             var dto = request.Dto;
 
@@ -57,27 +57,26 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
                 throw new UnauthenticatedException("Invalid credentials");
             }
 
-            var accessToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName);
+            var accessToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName, user.Role);
+            var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
-            var refreshToken = new RefreshToken
+            var refreshTokenEntity = new RefreshToken
             {
                 UserId = user.Id,
-                Token = Guid.NewGuid().ToString(),
+                Token = refreshToken,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
                 IsRevoked = false
             };
 
-            await _unitOfWork.RefreshTokenRepository.AddAsync(refreshToken);
+            await _unitOfWork.RefreshTokenRepository.AddAsync(refreshTokenEntity);
             await _unitOfWork.SaveAsync();
 
-            return new AuthResultDto
+            return new AuthResponse
             {
                 AccessToken = accessToken,
                 AccessTokenExpiration = DateTime.UtcNow.AddMinutes(60),
-                RefreshToken = refreshToken.Token,
-                RefreshTokenExpiration = refreshToken.ExpiresAt,
-                Email = user.Email,
-                UserName = user.UserName
+                RefreshToken = refreshToken,
+                RefreshTokenExpiration = refreshTokenEntity.ExpiresAt
             };
         }
     }

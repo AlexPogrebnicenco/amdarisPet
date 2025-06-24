@@ -9,26 +9,26 @@ using OnlineCoursesPlatform.Domain.Entities;
 
 namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers;
 
-public class CreateUserFromGoogleHandler : IRequestHandler<CreateUserFromGoogle, AuthResultDto>
+public class CreateUserFromGoogleHandler : IRequestHandler<CreateUserFromGoogle, AuthResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IJwtTokenGenerator _tokenGenerator;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly ILogger<CreateUserFromGoogleHandler> _logger;
     private readonly IMapper _mapper;
 
     public CreateUserFromGoogleHandler(
         IUnitOfWork unitOfWork,
-        IJwtTokenGenerator tokenGenerator,
+        IJwtTokenGenerator jwtTokenGenerator,
         ILogger<CreateUserFromGoogleHandler> logger,
         IMapper mapper)
     {
         _unitOfWork = unitOfWork;
-        _tokenGenerator = tokenGenerator;
+        _jwtTokenGenerator = jwtTokenGenerator;
         _logger = logger;
         _mapper = mapper;
     }
 
-    public async Task<AuthResultDto> Handle(CreateUserFromGoogle request, CancellationToken cancellationToken)
+    public async Task<AuthResponse> Handle(CreateUserFromGoogle request, CancellationToken cancellationToken)
     {
         var dto = request.Dto;
 
@@ -38,6 +38,8 @@ public class CreateUserFromGoogleHandler : IRequestHandler<CreateUserFromGoogle,
         {
             user = _mapper.Map<User>(dto);
             user.ExternalProvider = "Google";
+            user.Role = "User";
+
             await _unitOfWork.UserRepository.AddAsync(user);
             await _unitOfWork.SaveAsync();
 
@@ -48,30 +50,26 @@ public class CreateUserFromGoogleHandler : IRequestHandler<CreateUserFromGoogle,
             _logger.LogInformation("Google user already exists: {Email}", user.Email);
         }
 
-        var now = DateTime.UtcNow;
-        var accessTokenExpiration = now.AddMinutes(60);
-        var refreshTokenExpiration = now.AddDays(7);
+        var accessToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName, user.Role);
+        var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
-        var accessToken = _tokenGenerator.GenerateToken(user.Id, user.Email, user.UserName);
-        var refreshToken = new RefreshToken
+        var refreshTokenEntity = new RefreshToken
         {
             UserId = user.Id,
-            Token = Guid.NewGuid().ToString(),
-            ExpiresAt = refreshTokenExpiration,
+            Token = refreshToken,
+            ExpiresAt = DateTime.UtcNow.AddDays(7),
             IsRevoked = false
         };
 
-        await _unitOfWork.RefreshTokenRepository.AddAsync(refreshToken);
+        await _unitOfWork.RefreshTokenRepository.AddAsync(refreshTokenEntity);
         await _unitOfWork.SaveAsync();
 
-        return new AuthResultDto
+        return new AuthResponse
         {
             AccessToken = accessToken,
-            AccessTokenExpiration = accessTokenExpiration,
-            RefreshToken = refreshToken.Token,
-            RefreshTokenExpiration = refreshToken.ExpiresAt,
-            Email = user.Email,
-            UserName = user.UserName
+            AccessTokenExpiration = DateTime.UtcNow.AddMinutes(60),
+            RefreshToken = refreshToken,
+            RefreshTokenExpiration = refreshTokenEntity.ExpiresAt
         };
     }
 }

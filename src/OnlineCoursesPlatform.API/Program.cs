@@ -30,6 +30,18 @@ builder.Services.AddApplication();
 builder.Services.AddInfrastructure();
 builder.Services.AddLogging();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("FrontendPolicy", policy =>
+    {
+        policy.WithOrigins("https://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
+
+
 
 // Authentication
 builder.Services.AddCustomAuthentication(builder.Configuration);
@@ -38,6 +50,7 @@ var app = builder.Build();
 
 //Configure the HTTP request pipeline.
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseCors("FrontendPolicy");
 
 if (app.Environment.IsDevelopment())
 {

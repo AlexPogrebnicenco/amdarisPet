@@ -210,6 +210,35 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.ToTable("ProgressRecords");
                 });
 
+            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.RefreshToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("RefreshTokens");
+                });
+
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Review", b =>
                 {
                     b.Property<int>("Id")
@@ -239,6 +268,35 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.SetPasswordToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SetPasswordTokens", (string)null);
                 });
 
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Tag", b =>
@@ -288,6 +346,47 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.ToTable("Teachers");
                 });
 
+            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.TeacherRegistrationRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Age")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Gender")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TeacherRegistrationRequests");
+                });
+
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -304,11 +403,23 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("ExternalProvider")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Gender")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -439,6 +550,17 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.RefreshToken", b =>
+                {
+                    b.HasOne("OnlineCoursesPlatform.Domain.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Review", b =>
                 {
                     b.HasOne("OnlineCoursesPlatform.Domain.Entities.Course", "Course")
@@ -448,6 +570,17 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.SetPasswordToken", b =>
+                {
+                    b.HasOne("OnlineCoursesPlatform.Domain.Entities.User", "User")
+                        .WithMany("SetPasswordTokens")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Category", b =>
@@ -492,6 +625,8 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.Navigation("Enrollments");
 
                     b.Navigation("ProgressRecords");
+
+                    b.Navigation("SetPasswordTokens");
                 });
 #pragma warning restore 612, 618
         }

@@ -21,6 +21,10 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence
         public DbSet<CourseTeacher> CourseTeachers => Set<CourseTeacher>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
+        public DbSet<TeacherRegistrationRequest> TeacherRegistrationRequests => Set<TeacherRegistrationRequest>();
+        public DbSet<SetPasswordToken> SetPasswordTokens => Set<SetPasswordToken>();
+
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

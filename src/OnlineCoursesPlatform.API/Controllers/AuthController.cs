@@ -7,6 +7,7 @@ using OnlineCoursesPlatform.Application.Features.Auth.Commands;
 using OnlineCoursesPlatform.Application.Features.Auth.Dto;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
+using OnlineCoursesPlatform.Application.Features.TeacherRegistrationRequests.Dto;
 
 namespace OnlineCoursesPlatform.API.Controllers;
 
@@ -30,25 +31,48 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-    [HttpPost]
-    [Route("register")]
-    public async Task<IActionResult> Register([FromBody] RegisterDto dto)
+    [HttpPost("register-user")]
+    public async Task<IActionResult> RegisterUser([FromBody] RegisterDto dto)
     {
         var response = await _mediator.Send(new RegisterUser(dto));
         return Ok(response);
     }
 
-    [HttpGet]
-    [Route("protected")]
-    [Authorize]
-    public IActionResult ProtectedRoute() => Ok("You are authorized");
-
-    [HttpGet]
-    [Route("logout")]
-    public async Task<IActionResult> Logout()
+    [HttpPost("set-password")]
+    public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto dto)
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Redirect("/login");
+        await _mediator.Send(new SetPasswordCommand(dto));
+        return Ok(new { Message = "Password successfully set." });
+    }
+
+    //[HttpPost]
+    //[Route("register-teacher")]
+    //public async Task<IActionResult> RegisterTeacher([FromBody] CreateTeacherRegistrationRequestDto dto)
+    //{
+    //    await _mediator.Send(new RegisterTeacher(dto));
+    //    return Ok(new { Message = "Teacher registration request submitted successfully. Please wait for approval." });
+    //}
+
+    //[HttpPost("approve-teacher/{teacherId}")]
+    //public async Task<IActionResult> ApproveTeacher(int teacherId)
+    //{
+    //    await _mediator.Send(new ApproveTeacher(teacherId));
+    //    return Ok("Teacher approved and password setup email sent.");
+    //}
+
+    //[HttpPost]
+    //[Route("set-password")]
+    //public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto dto)
+    //{
+    //    var response = await _mediator.Send(new SetPassword(dto));
+    //    return Ok(response);
+    //}
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto dto)
+    {
+        var result = await _mediator.Send(new RefreshTokenCommand(dto));
+        return Ok(result);
     }
 
     [HttpGet]
@@ -82,11 +106,17 @@ public class AuthController : ControllerBase
         return Ok(authResult);
     }
 
-    [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto dto)
+    [HttpGet]
+    [Route("logout")]
+    public async Task<IActionResult> Logout()
     {
-        var result = await _mediator.Send(new RefreshTokenCommand(dto));
-        return Ok(result);
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return Redirect("/login");
     }
+
+    [HttpGet]
+    [Route("protected")]
+    [Authorize]
+    public IActionResult ProtectedRoute() => Ok("You are authorized");
 
 }
