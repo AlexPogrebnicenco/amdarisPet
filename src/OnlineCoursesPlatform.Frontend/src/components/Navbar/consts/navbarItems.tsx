@@ -4,7 +4,6 @@ import TopicIcon from '@mui/icons-material/Topic';
 import ExtensionIcon from '@mui/icons-material/Extension';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import CardMembershipIcon from '@mui/icons-material/CardMembership';
-import SettingsIcon from '@mui/icons-material/Settings';
 import InfoIcon from '@mui/icons-material/Info';
 import CoursesTabs from '../../../pages/Courses/CoursesTabs';
 

@@ -2,12 +2,9 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { loginSchema } from "./validationSchema";
 import { Box, Typography, useTheme } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import CustomLink from "../../../components/common/CustomLink/CustomLink";
 import CommonButton from "../../../components/common/CommonButton/CommonButton";
 import CustomTextField from "../../../components/common/CustomTextField/CustomTextField";
-import { login } from "../../../services/authService";
-
 
 type LoginFormInputs = {
   email: string;
@@ -15,13 +12,12 @@ type LoginFormInputs = {
 };
 
 interface LoginFormProps {
-  onSuccess: () => void;
+  onSuccess: (formData: { email: string; password: string }) => void;
 }
-
 
 const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const theme = useTheme();
-  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -30,14 +26,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     resolver: yupResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginFormInputs) => {
-    try {
-      await login(data);
-      onSuccess();            // MATRIX RAIN
-    } catch (error) {
-      console.error("Login failed:", error);
-      alert("Invalid email or password");
-    }
+  const onSubmit = (data: LoginFormInputs) => {
+    onSuccess(data);
   };
 
   return (
@@ -98,7 +88,10 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           SIGN IN
         </CommonButton>
       </Box>
-
+      <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+        Forgot your password?{" "}
+        <CustomLink to="/auth/forgot-password">Reset here</CustomLink>
+      </Typography>
       <Typography variant="body2" align="center">
         Don&apos;t have an account?{" "}
         <CustomLink to="/register">Register here</CustomLink>

@@ -6,6 +6,6 @@ namespace OnlineCoursesPlatform.Application.Abstractions.Repositories
     public interface ITeacherRegistrationRequestRepository : IRepositoryEF<TeacherRegistrationRequest>
     {
         Task<TeacherRegistrationRequest?> GetByEmailAsync(string email);
-        Task<List<TeacherRegistrationRequest>> GetPendingRequestsAsync();
+        Task<(List<TeacherRegistrationRequest> Items, int TotalCount)> GetPendingRequestsAsync(int page, int pageSize);
     }
 }

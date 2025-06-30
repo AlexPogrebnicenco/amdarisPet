@@ -15,11 +15,11 @@
 
         public bool IsApproved { get; set; } = false;
 
-
-        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
-        public ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();   
-        public ICollection<ProgressRecord> ProgressRecords { get; set; } = new List<ProgressRecord>();
-        public ICollection<SetPasswordToken> SetPasswordTokens { get; set; } = new List<SetPasswordToken>();
-
+        public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+        public virtual ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
+        public virtual ICollection<ProgressRecord> ProgressRecords { get; set; } = new List<ProgressRecord>();
+        public virtual ICollection<SetPasswordToken> SetPasswordTokens { get; set; } = new List<SetPasswordToken>();
+        public virtual ICollection<CourseAuthor> CourseAuthors { get; set; } = new List<CourseAuthor>();
     }
+
 }

@@ -21,7 +21,7 @@ const NavbarItem = ({ id, icon, label, route }: NavbarItemProps) => {
     <ListItem key={id} disablePadding sx={{ justifyContent: "center" }}>
       <ListItemButton
         component={NavLink}
-        to={route}
+        to={`/app/${route}`} 
         sx={{
           width: "80%", // или '80%' — кнопка не на весь ListItem
           borderRadius: "12px", // округлённые углы

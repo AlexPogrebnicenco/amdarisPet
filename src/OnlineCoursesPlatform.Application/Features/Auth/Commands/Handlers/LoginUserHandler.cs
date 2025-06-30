@@ -57,6 +57,11 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
                 throw new UnauthenticatedException("Invalid credentials");
             }
 
+            if (dto.Email.Contains("fail"))
+            {
+                throw new Exception("Test transaction failure.");
+            }
+
             var accessToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName, user.Role);
             var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 

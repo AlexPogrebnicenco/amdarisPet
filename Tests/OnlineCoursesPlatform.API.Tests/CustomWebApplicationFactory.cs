@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc.Testing;
+﻿//using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace OnlineCoursesPlatform.API.Tests
-{
-    public class CustomWebApplicationFactory : WebApplicationFactory<Program>
-    {
-    }
-}
+//namespace OnlineCoursesPlatform.API.Tests
+//{
+//    public class CustomWebApplicationFactory : WebApplicationFactory<Program>
+//    {
+//    }
+//}

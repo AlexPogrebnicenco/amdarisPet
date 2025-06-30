@@ -1,6 +1,4 @@
 ﻿using OnlineCoursesPlatform.Application.Interfaces.Repositories;
-using OnlineCoursesPlatform.Domain.Entities;
-using OnlineCoursesPlatform.Domain.Repositories;
 
 namespace OnlineCoursesPlatform.Application.Abstractions.Repositories
 {
@@ -11,17 +9,17 @@ namespace OnlineCoursesPlatform.Application.Abstractions.Repositories
         ICertificateRepository CertificateRepository { get; }
         ICourseRepository CourseRepository { get; }
         ICourseTagRepository CourseTagRepository { get; }
-        ICourseTeacherRepository CourseTeacherRepository { get; }
-        IEnrollmentRepository EnrollmentRepository { get;}
+        IEnrollmentRepository EnrollmentRepository { get; }
         ILessonRepository LessonRepository { get; }
         IProgressRecordRepository ProgressRecordRepository { get; }
         IReviewRepository ReviewRepository { get; }
         ITagRepository TagRepository { get; }
-        ITeacherRepository TeacherRepository { get; }
         IRefreshTokenRepository RefreshTokenRepository { get; }
 
         ITeacherRegistrationRequestRepository TeacherRegistrationRequestRepository { get; }
         ISetPasswordTokenRepository SetPasswordTokenRepository { get; }
+
+        ICourseAuthorRepository CourseAuthorRepository { get; }
 
 
         Task SaveAsync();

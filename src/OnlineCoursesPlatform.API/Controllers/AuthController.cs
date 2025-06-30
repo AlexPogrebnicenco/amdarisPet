@@ -45,6 +45,20 @@ public class AuthController : ControllerBase
         return Ok(new { Message = "Password successfully set." });
     }
 
+    [HttpPost("request-new-link")]
+    public async Task<IActionResult> RequestNewLink([FromBody] RequestNewLinkCommand command)
+    {
+        await _mediator.Send(command);
+        return Ok(new { Message = "New password link sent to your email." });
+    }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
+    {
+        await _mediator.Send(command);
+        return Ok(new { Message = "Password reset link sent to your email." });
+    }
+
     //[HttpPost]
     //[Route("register-teacher")]
     //public async Task<IActionResult> RegisterTeacher([FromBody] CreateTeacherRegistrationRequestDto dto)
@@ -111,7 +125,7 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Redirect("/login");
+        return Ok(new { Message = "You have been logged out." });
     }
 
     [HttpGet]

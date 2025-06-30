@@ -8,7 +8,6 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         public DbSet<User> Users => Set<User>();
-        public DbSet<Teacher> Teachers => Set<Teacher>();
         public DbSet<Course> Courses => Set<Course>();
         public DbSet<Category> Categories => Set<Category>();
         public DbSet<Lesson> Lessons => Set<Lesson>();
@@ -18,11 +17,13 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence
         public DbSet<ProgressRecord> ProgressRecords => Set<ProgressRecord>();
         public DbSet<Tag> Tags => Set<Tag>();
         public DbSet<CourseTag> CourseTags => Set<CourseTag>();
-        public DbSet<CourseTeacher> CourseTeachers => Set<CourseTeacher>();
         public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         public DbSet<TeacherRegistrationRequest> TeacherRegistrationRequests => Set<TeacherRegistrationRequest>();
         public DbSet<SetPasswordToken> SetPasswordTokens => Set<SetPasswordToken>();
+        public DbSet<CourseAuthor> CourseAuthors => Set<CourseAuthor>();
+
+
 
 
 

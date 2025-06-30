@@ -7,5 +7,6 @@
         Task RemoveAsync(T entity);
         Task<IEnumerable<T>> GetAllAsync(int pageNumber, int pageSize);
         Task<T> UpdateAsync(T entity);
+        Task<IEnumerable<T>> GetPagedAsync(IQueryable<T> query, int pageNumber, int pageSize);
     }
 }

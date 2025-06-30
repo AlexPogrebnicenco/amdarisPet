@@ -2,17 +2,18 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerSchema } from "./validationSchema";
 import { Box, Typography, MenuItem, useTheme } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import CustomTextField from "../../../components/common/CustomTextField/CustomTextField";
 import CommonButton from "../../../components/common/CommonButton/CommonButton";
-import { registerUser,registerTeacher } from "../../../services/authService";
 import type { InferType } from "yup";
 
 type RegisterFormInputs = InferType<typeof registerSchema>;
 
-const RegisterForm = () => {
+interface RegisterFormProps {
+  onSuccess: (formData: RegisterFormInputs) => void;
+}
+
+const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
   const theme = useTheme();
-  const navigate = useNavigate();
 
   const {
     register,
@@ -22,21 +23,8 @@ const RegisterForm = () => {
     resolver: yupResolver(registerSchema),
   });
 
-  const onSubmit = async (data: RegisterFormInputs) => {
-    try {
-      if (data.role === "Teacher") {
-        const { password, confirmPassword, ...teacherData } = data;
-        await registerTeacher(teacherData); // без паролей
-        alert("Заявка на регистрацию учителя отправлена. Ожидайте подтверждения.");
-        navigate("/");
-      } else {
-        await registerUser(data);
-        navigate("/");
-      }
-    } catch (error) {
-      console.error("Ошибка регистрации:", error);
-      // Можно подключить snackbar/alert
-    }
+  const onSubmit = (data: RegisterFormInputs) => {
+    onSuccess(data);
   };
 
   return (
@@ -112,30 +100,8 @@ const RegisterForm = () => {
         error={!!errors.gender}
         helperText={errors.gender?.message}
       >
-        <MenuItem
-          value="male"
-          sx={{
-            color: theme.palette.text.primary,
-            "&:hover": {
-              color: theme.palette.text.secondary,
-              backgroundColor: theme.palette.action.selected,
-            },
-          }}
-        >
-          Male
-        </MenuItem>
-        <MenuItem
-          value="female"
-          sx={{
-            color: theme.palette.text.primary,
-            "&:hover": {
-              color: theme.palette.text.secondary,
-              backgroundColor: theme.palette.action.selected,
-            },
-          }}
-        >
-          Female
-        </MenuItem>
+        <MenuItem value="male">Male</MenuItem>
+        <MenuItem value="female">Female</MenuItem>
       </CustomTextField>
 
       <CustomTextField

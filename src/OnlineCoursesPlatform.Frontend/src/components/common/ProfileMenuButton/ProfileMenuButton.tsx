@@ -11,7 +11,7 @@ const ProfileMenuButton = () => {
 
   const handleClick = () => {
     setOpen(true);
-    navigate("/profile"); 
+    navigate("/app/profile"); 
   };
 
   const handleBlur = () => {

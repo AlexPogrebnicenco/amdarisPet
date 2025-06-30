@@ -2,7 +2,10 @@
 {
     public class CreateCourseDto
     {
-        public required string Title { get; set; }
-        public required string Description { get; set; }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        public int? CategoryId { get; set; }
+
+        public List<int> TagIds { get; set; } = new();
     }
 }

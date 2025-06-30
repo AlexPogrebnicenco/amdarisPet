@@ -15,6 +15,7 @@ public class TeacherRegistrationRequestController : ControllerBase
         _mediator = mediator;
     }
 
+    // POST: api/teacher-requests
     [HttpPost]
     public async Task<IActionResult> CreateTeacherRegistrationRequest([FromBody] CreateTeacherRegistrationRequestDto dto)
     {
@@ -22,24 +23,19 @@ public class TeacherRegistrationRequestController : ControllerBase
         return Ok(new { Message = "Teacher registration request submitted successfully. Please wait for approval." });
     }
 
+    // GET: api/teacher-requests
     [HttpGet]
-    public async Task<IActionResult> GetPendingRequests()
+    public async Task<IActionResult> GetPendingRequests([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
     {
-        var requests = await _mediator.Send(new GetPendingTeacherRequestsQuery());
+        var requests = await _mediator.Send(new GetPendingTeacherRequestsQuery(page, pageSize));
         return Ok(requests);
     }
 
-    [HttpPost("{id}/approve")]
-    public async Task<IActionResult> Approve(int id)
+    // PUT: api/teacher-requests/{id}
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateTeacherRequestStatusDto dto)
     {
-        await _mediator.Send(new ApproveTeacherRequestCommand(id));
-        return Ok(new { Message = "Teacher request approved." });
-    }
-
-    [HttpPost("{id}/reject")]
-    public async Task<IActionResult> Reject(int id)
-    {
-        await _mediator.Send(new RejectTeacherRequestCommand(id));
-        return Ok(new { Message = "Teacher request rejected." });
+        await _mediator.Send(new UpdateTeacherRequestStatusCommand(id, dto.Status));
+        return Ok(new { Message = $"Teacher request {dto.Status.ToLower()}." });
     }
 }

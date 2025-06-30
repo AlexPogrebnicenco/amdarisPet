@@ -8,8 +8,9 @@
         public int OrderNumber { get; set; }
 
         public int CourseId { get; set; }
-        public Course? Course { get; set; }
+        public virtual Course? Course { get; set; }
 
-        public ICollection<ProgressRecord> ProgressRecords { get; set; } = new List<ProgressRecord>();
+        public virtual ICollection<ProgressRecord> ProgressRecords { get; set; } = new List<ProgressRecord>();
     }
+
 }

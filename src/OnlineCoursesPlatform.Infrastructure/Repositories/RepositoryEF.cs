@@ -45,5 +45,13 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
             _dbSet.Update(entity);
             return await Task.FromResult(entity);
         }
+
+        public async Task<IEnumerable<T>> GetPagedAsync(IQueryable<T> query, int pageNumber, int pageSize)
+        {
+            return await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
     }
 }

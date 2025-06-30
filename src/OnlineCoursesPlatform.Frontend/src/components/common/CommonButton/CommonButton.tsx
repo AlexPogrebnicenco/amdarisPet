@@ -1,11 +1,11 @@
-// src/components/common/CustomButton/CustomButton.tsx
-import { Button, useTheme } from "@mui/material";
+import { Button, useTheme, type SxProps } from "@mui/material";
 
 interface CustomButtonProps {
   type?: "button" | "submit" | "reset";
   children: React.ReactNode;
   fullWidth?: boolean;
   onClick?: () => void;
+  sx?: SxProps;
 }
 
 const CommonButton = ({
@@ -13,6 +13,7 @@ const CommonButton = ({
   children,
   fullWidth = false,
   onClick,
+  sx,
 }: CustomButtonProps) => {
   const theme = useTheme();
   return (
@@ -33,6 +34,7 @@ const CommonButton = ({
         "&:active": {
           transform: "scale(0.98)",
         },
+        ...sx,
       }}
     >
       {children}

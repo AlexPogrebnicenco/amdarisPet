@@ -1,21 +1,13 @@
-﻿using OnlineCoursesPlatform.Domain.Entities;
-
-namespace OnlineCoursesPlatform.Application.Features.Courses.Dto
+﻿namespace OnlineCoursesPlatform.Application.Features.Courses.Dto
 {
     public class CourseDto
     {
         public int Id { get; set; }
-        public required string Title { get; set; }
-        public required string Description { get; set; }
-
-        public static CourseDto FromCourse(Course course)
-        {
-            return new CourseDto
-            {
-                Id = course.Id,
-                Title = course.Title,
-                Description = course.Description
-            };
-        }
+        public string Title { get; set; } = null!;
+        public string Description { get; set; } = null!;
+        public int? CategoryId { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateModified { get; set; }
     }
+
 }

@@ -1,0 +1,12 @@
+﻿namespace OnlineCoursesPlatform.Domain.Entities
+{
+    public class CourseAuthor
+    {
+        public int CourseId { get; set; }
+        public virtual Course? Course { get; set; }
+
+        public int UserId { get; set; }
+        public virtual User? User { get; set; }
+    }
+
+}

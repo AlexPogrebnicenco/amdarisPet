@@ -1,6 +1,8 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from './MatrixRain.module.css';
-
+import { Button, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import CommonButton from '../CommonButton/CommonButton';
 
 const letters = ['W', 'E', 'L', 'C', 'O', 'M', 'E', ' ', 'T', 'O', ' ', 'O', 'C', 'R'];
 
@@ -8,6 +10,8 @@ const MatrixRain: React.FC = () => {
   const canvasRef1 = useRef<HTMLCanvasElement | null>(null);
   const canvasRef2 = useRef<HTMLCanvasElement | null>(null);
   const spansRef = useRef<(HTMLSpanElement | null)[]>([]);
+  const [showButtons, setShowButtons] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const canvas = canvasRef1.current;
@@ -22,67 +26,67 @@ const MatrixRain: React.FC = () => {
     canvas2.width = window.innerWidth;
     canvas2.height = window.innerHeight;
 
-   class Symbol {
-  private characters: string;
-  public text: string;
-  public x: number;
-  public y: number;
-  public fontSize: number;
-  public canvasHeight: number;
+    class Symbol {
+      private characters: string;
+      public text: string;
+      public x: number;
+      public y: number;
+      public fontSize: number;
+      public canvasHeight: number;
 
-  constructor(x: number, y: number, fontSize: number, canvasHeight: number) {
-    this.x = x;
-    this.y = y;
-    this.fontSize = fontSize;
-    this.canvasHeight = canvasHeight;
-    this.characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    this.text = 'A';
-  }
+      constructor(x: number, y: number, fontSize: number, canvasHeight: number) {
+        this.x = x;
+        this.y = y;
+        this.fontSize = fontSize;
+        this.canvasHeight = canvasHeight;
+        this.characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        this.text = 'A';
+      }
 
-  draw(context: CanvasRenderingContext2D, context2: CanvasRenderingContext2D) {
-    this.text = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
-    const xPos = this.x * this.fontSize;
-    const yPos = this.y * this.fontSize;
-    context.fillText(this.text, xPos, yPos);
-    context2.fillText(this.text, xPos, yPos);
+      draw(context: CanvasRenderingContext2D, context2: CanvasRenderingContext2D) {
+        this.text = this.characters.charAt(Math.floor(Math.random() * this.characters.length));
+        const xPos = this.x * this.fontSize;
+        const yPos = this.y * this.fontSize;
+        context.fillText(this.text, xPos, yPos);
+        context2.fillText(this.text, xPos, yPos);
 
-    if (yPos > this.canvasHeight && Math.random() > 0.97) {
-      this.y = 0;
-    } else {
-      this.y += 0.9;
+        if (yPos > this.canvasHeight && Math.random() > 0.97) {
+          this.y = 0;
+        } else {
+          this.y += 0.9;
+        }
+      }
     }
-  }
-}
 
     class Effect {
-  public fontSize: number;
-  public columns: number;
-  public symbols: Symbol[] = [];
-  public canvasWidth: number;
-  public canvasHeight: number;
+      public fontSize: number;
+      public columns: number;
+      public symbols: Symbol[] = [];
+      public canvasWidth: number;
+      public canvasHeight: number;
 
-  constructor(canvasWidth: number, canvasHeight: number) {
-    this.canvasWidth = canvasWidth;
-    this.canvasHeight = canvasHeight;
-    this.fontSize = 16;
-    this.columns = Math.floor(this.canvasWidth / this.fontSize);
-    this.initialize();
-  }
+      constructor(canvasWidth: number, canvasHeight: number) {
+        this.canvasWidth = canvasWidth;
+        this.canvasHeight = canvasHeight;
+        this.fontSize = 16;
+        this.columns = Math.ceil(this.canvasWidth / this.fontSize)+1; // ✅ исправлено
+        this.initialize();
+      }
 
-  initialize() {
-    for (let i = 0; i < this.columns; i++) {
-      this.symbols[i] = new Symbol(i, 0, this.fontSize, this.canvasHeight);
+      initialize() {
+        for (let i = 0; i < this.columns; i++) {
+          this.symbols[i] = new Symbol(i, 0, this.fontSize, this.canvasHeight);
+        }
+      }
+
+      resize(width: number, height: number) {
+        this.canvasWidth = width;
+        this.canvasHeight = height;
+        this.columns = Math.ceil(this.canvasWidth / this.fontSize)+1; // ✅ исправлено
+        this.symbols = [];
+        this.initialize();
+      }
     }
-  }
-
-  resize(width: number, height: number) {
-    this.canvasWidth = width;
-    this.canvasHeight = height;
-    this.columns = Math.floor(this.canvasWidth / this.fontSize);
-    this.symbols = [];
-    this.initialize();
-  }
-}
 
     const effect = new Effect(canvas.width, canvas.height);
     let lastTime = 0;
@@ -130,35 +134,35 @@ const MatrixRain: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    let dataCounter = 0;
     const spans = spansRef.current;
+    let currentIndex = 0;
 
-    spans.forEach((span) => {
+    const revealNextLetter = () => {
+      if (currentIndex >= spans.length) return;
+
+      const span = spans[currentIndex];
       if (span) {
-        const changeLimit = Math.floor(Math.random() * 100);
-        span.dataset.change = changeLimit.toString();
+        span.innerText = letters[currentIndex];
+        span.classList.remove('str');
       }
-    });
-
-    const updateLetters = () => {
-      const index = Math.floor(Math.random() * spans.length);
-      const span = spans[index];
-      if (!span || !span.classList.contains('str')) return;
-
-      span.innerText = Math.floor(Math.random() * 10).toString();
-      span.dataset.number = (dataCounter++).toString();
-
-      spans.forEach((el, i) => {
-        if (!el) return;
-        if (parseInt(el.dataset.number || '0') > parseInt(el.dataset.change || '100')) {
-          el.innerText = letters[i];
-          el.classList.remove('str');
-        }
-      });
+      currentIndex++;
     };
 
-    const interval = setInterval(updateLetters, 30);
+    const intervalTime = 3000 / letters.length;
+    const interval = setInterval(() => {
+      revealNextLetter();
+      if (currentIndex >= spans.length) clearInterval(interval);
+    }, intervalTime);
+
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowButtons(true);
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -173,12 +177,23 @@ const MatrixRain: React.FC = () => {
               spansRef.current[index] = el;
             }}
             className="str"
-            data-change="0"
           >
             0
           </span>
         ))}
       </div>
+
+       {/* 👉 Блок с кнопками с анимацией */}
+    <div
+      className={`${styles.buttonsWrapper} ${showButtons ? styles.buttonsWrapperVisible : ''}`}
+    >
+      <CommonButton  onClick={() => navigate('/login')}>
+        Sign In
+      </CommonButton>
+      <CommonButton onClick={() => navigate('/register')}>
+        Register
+      </CommonButton>
+    </div>
     </div>
   );
 };

@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using OnlineCoursesPlatform.Application.Abstractions.Repositories;
 using OnlineCoursesPlatform.Application.Abstractions.Security;
+using OnlineCoursesPlatform.Application.Common.Exceptions;
 
 namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
 {
@@ -29,7 +30,7 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             if (dto.Password != dto.ConfirmPassword)
             {
                 _logger.LogWarning("Password mismatch for token: {Token}", dto.Token);
-                throw new InvalidOperationException("Passwords do not match.");
+                throw new AuthException("Passwords do not match.");
             }
 
             // Проверяем существование токена
@@ -37,21 +38,21 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             if (tokenEntity == null)
             {
                 _logger.LogWarning("Token not found: {Token}", dto.Token);
-                throw new InvalidOperationException("Invalid or expired token.");
+                throw new AuthException("Invalid or expired token.");
             }
 
             // Проверяем, не использован ли токен
             if (tokenEntity.IsUsed)
             {
                 _logger.LogWarning("Token already used: {Token}", dto.Token);
-                throw new InvalidOperationException("Token has already been used.");
+                throw new AuthException("Token has already been used.");
             }
 
             // Проверяем, не истёк ли токен
             if (tokenEntity.ExpiresAt < DateTime.UtcNow)
             {
                 _logger.LogWarning("Token expired: {Token}", dto.Token);
-                throw new InvalidOperationException("Token has expired.");
+                throw new AuthException("Token has expired.");
             }
 
             // Проверяем, существует ли пользователь
@@ -59,7 +60,7 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             if (user == null)
             {
                 _logger.LogError("User not found for token: {Token}", dto.Token);
-                throw new InvalidOperationException("User not found.");
+                throw new AuthException("User not found.");
             }
 
             // Устанавливаем новый пароль

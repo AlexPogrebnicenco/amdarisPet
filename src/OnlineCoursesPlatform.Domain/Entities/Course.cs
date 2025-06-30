@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace OnlineCoursesPlatform.Domain.Entities
+﻿namespace OnlineCoursesPlatform.Domain.Entities
 {
     public class Course
     {
@@ -11,15 +9,14 @@ namespace OnlineCoursesPlatform.Domain.Entities
         public DateTime DateModified { get; set; }
 
         public int? CategoryId { get; set; }
-        public Category? Category { get; set; }
+        public virtual Category? Category { get; set; }
 
-
-        public ICollection<Review> Reviews { get; set; } = new List<Review>();
-        public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
-        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
-        public ICollection<CourseTeacher> CourseTeachers { get; set; } = new List<CourseTeacher>();
-        public ICollection<CourseTag> CourseTags { get; set; } = new List<CourseTag>();
-        public ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
-
+        public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
+        public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
+        public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
+        public virtual ICollection<CourseTag> CourseTags { get; set; } = new List<CourseTag>();
+        public virtual ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
+        public virtual ICollection<CourseAuthor> CourseAuthors { get; set; } = new List<CourseAuthor>();
     }
+
 }

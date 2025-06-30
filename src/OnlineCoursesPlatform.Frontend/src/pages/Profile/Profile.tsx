@@ -2,14 +2,24 @@ import { Avatar, Box, Typography, useTheme } from "@mui/material";
 import CommonButton from "../../components/common/CommonButton/CommonButton";
 import ProfileTabs from "./ProfileTabs";
 import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../api/axios";
+import { useAuth } from "../../context/AuthContext"; 
 
 const Profile = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const handleSignOut = () => {
-    // Здесь можно также очистить токен или состояние авторизации
-    navigate("/login");
+  const { logout } = useAuth(); //  подключил logout из контекста
+
+  const handleSignOut = async () => {
+    try {
+      await axiosInstance.get('/auth/logout'); // запрос на бэк для очистки cookies
+      logout(); //  вызываем глобальный logout
+      navigate("/login"); // перенаправляем
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
   };
+
   return (
     <Box>
       {/* Profile top section */}
@@ -48,5 +58,3 @@ const Profile = () => {
 };
 
 export default Profile;
-
-

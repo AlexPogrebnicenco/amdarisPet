@@ -23,3 +23,20 @@
   text-align: center;
   color: #0369A1;
 }
+
+.buttonsWrapper {
+  position: absolute;
+  bottom: 35%;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  width: 100%;
+  opacity: 0;
+  transform: translateY(-20px); /* 👉 Теперь всплывает сверху */
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.buttonsWrapperVisible {
+  opacity: 0.75;
+  transform: translateY(0);
+}

@@ -1,5 +1,4 @@
 import {
-  AppBar,
   Divider,
   List,
   Toolbar,
@@ -10,9 +9,11 @@ import { mainNavbarItems } from "./consts/navbarItems";
 import NavbarItem from "./NavbarItem";
 import { teacherNavbarItems } from "./consts/teacherNavbarItems";
 import { adminNavbarItems } from "./consts/adminNavbaritems";
+import RoleBasedRender from "../common/RoleBasedRender/RoleBasedRender";
 
 const NavbarContent = () => {
   const theme = useTheme();
+
   return (
     <>
       <Toolbar sx={{ justifyContent: "center" }}>
@@ -46,22 +47,26 @@ const NavbarContent = () => {
       />
 
       {/* Teacher's fields */}
-      <List>
-        {teacherNavbarItems.map((item) => (
-          <NavbarItem key={item.id} {...item} />
-        ))}
-      </List>
+      <RoleBasedRender allowedRoles={['Teacher']}>
+        <List>
+          {teacherNavbarItems.map((item) => (
+            <NavbarItem key={item.id} {...item} />
+          ))}
+        </List>
 
-      <Divider
-        variant="middle"
-        sx={{ backgroundColor: theme.palette.divider }}
-      />
+        <Divider variant="middle" sx={{ backgroundColor: theme.palette.divider }} />
+      </RoleBasedRender>
 
-      <List>
-        {adminNavbarItems.map((item) => (
-          <NavbarItem key={item.id} {...item} />
-        ))}
-      </List>
+      {/* Admin fields */}
+      <RoleBasedRender allowedRoles={['Admin']}>
+        <List>
+          {adminNavbarItems.map((item) => (
+            <NavbarItem key={item.id} {...item} />
+          ))}
+        </List>
+
+        <Divider variant="middle" sx={{ backgroundColor: theme.palette.divider }} />
+      </RoleBasedRender>
     </>
   );
 };

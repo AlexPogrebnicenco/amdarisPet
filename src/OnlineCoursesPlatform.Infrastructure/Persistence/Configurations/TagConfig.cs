@@ -10,12 +10,23 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence.Configurations
         {
             builder.HasKey(t => t.Id);
 
+            builder.Property(t => t.Id)
+                .ValueGeneratedOnAdd();
+
             builder.Property(t => t.Name)
                 .IsRequired()
                 .HasMaxLength(100);
 
             builder.HasIndex(t => t.Name)
                 .IsUnique();
+
+            builder.Property(t => t.CategoryId)
+                .IsRequired();
+
+            builder.HasOne(t => t.Category)
+                .WithMany(c => c.Tags)
+                .HasForeignKey(t => t.CategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

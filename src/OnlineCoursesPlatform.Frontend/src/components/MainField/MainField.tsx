@@ -11,7 +11,7 @@ const MainField: React.FC<MainFieldProps> = ({ drawerWidth }) => {
   const location = useLocation();
   const theme = useTheme();
 
-  const currentRoute = location.pathname.replace(/^\/+/, "");
+  const currentRoute = location.pathname.split("/").pop();
   const currentItem = mainNavbarItems.find((item) => item.route === currentRoute);
 
   const title = currentItem?.label;

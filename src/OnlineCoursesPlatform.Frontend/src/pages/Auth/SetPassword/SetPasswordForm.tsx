@@ -7,6 +7,9 @@ import CustomTextField from "../../../components/common/CustomTextField/CustomTe
 import CommonButton from "../../../components/common/CommonButton/CommonButton";
 import { setPassword } from "../../../services/authService";
 import type { InferType } from "yup";
+import { useAuth } from "../../../context/AuthContext";
+import { toast } from "react-toastify";
+import CustomLink from "../../../components/common/CustomLink/CustomLink";
 
 type SetPasswordInputs = InferType<typeof setPasswordSchema>;
 
@@ -15,6 +18,7 @@ const SetPasswordForm = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
+  const { setAuthState } = useAuth();
 
   const {
     register,
@@ -27,14 +31,28 @@ const SetPasswordForm = () => {
   const onSubmit = async (data: SetPasswordInputs) => {
     if (!token) {
       console.error("Token not found in URL");
+      toast.error("Token not found in URL");
       return;
     }
 
     try {
-      await setPassword({ ...data, token });
-      navigate("/");
-    } catch (error) {
+      await setPassword({ ...data, token }, setAuthState);
+      toast.success("Password successfully set!");
+      navigate("/app/home");
+    } catch (error: any) {
       console.error("Error setting password", error);
+
+      const errorMessage = error.response?.data?.detail;
+
+      if (errorMessage?.includes("already been used")) {
+        toast.error(
+          "This link has already been used. Please request a new one."
+        );
+      } else if (errorMessage?.includes("expired")) {
+        toast.error("This link has expired. Please request a new one.");
+      } else {
+        toast.error(errorMessage || "Something went wrong. Please try again.");
+      }
     }
   };
 
@@ -117,6 +135,22 @@ const SetPasswordForm = () => {
             <CommonButton type="submit" fullWidth>
               Set Password
             </CommonButton>
+          </Box>
+          <Box
+            sx={{
+              mt: 2,
+              textAlign: "center",
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ color: theme.palette.text.secondary }}
+            >
+              Link expired or already used?{" "}
+              <CustomLink to="/auth/request-new-link">
+                Request a new one
+              </CustomLink>
+            </Typography>
           </Box>
         </Box>
       </Paper>

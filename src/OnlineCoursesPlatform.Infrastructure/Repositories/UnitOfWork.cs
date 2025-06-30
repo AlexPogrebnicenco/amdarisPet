@@ -14,16 +14,15 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
             ICertificateRepository certificateRepository,
             ICourseRepository courseRepository,
             ICourseTagRepository courseTagRepository,
-            ICourseTeacherRepository courseTeacherRepository,
             IEnrollmentRepository enrollmentRepository,
             ILessonRepository lesson,
             IProgressRecordRepository progressRecordRepository,
             IReviewRepository reviewRepository,
             ITagRepository tagRepository,
-            ITeacherRepository teacherRepository,
             IRefreshTokenRepository refreshTokenRepository,
             ITeacherRegistrationRequestRepository teacherRegistrationRequestRepository,
-            ISetPasswordTokenRepository setPasswordTokenRepository
+            ISetPasswordTokenRepository setPasswordTokenRepository,
+            ICourseAuthorRepository courseAuthorRepository
             )
         {
             _context = context;
@@ -32,16 +31,15 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
             CertificateRepository = certificateRepository;
             CourseRepository = courseRepository;
             CourseTagRepository = courseTagRepository;
-            CourseTeacherRepository = courseTeacherRepository;
             EnrollmentRepository = enrollmentRepository;
             LessonRepository = lesson;
             ProgressRecordRepository = progressRecordRepository;
             ReviewRepository = reviewRepository;
             TagRepository = tagRepository;
-            TeacherRepository = teacherRepository;
             RefreshTokenRepository = refreshTokenRepository;
             TeacherRegistrationRequestRepository = teacherRegistrationRequestRepository;
             SetPasswordTokenRepository = setPasswordTokenRepository;
+            CourseAuthorRepository = courseAuthorRepository;
         }
 
         public IUserRepository UserRepository { get; private set; }
@@ -49,18 +47,18 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
         public ICertificateRepository CertificateRepository { get; private set; }
         public ICourseRepository CourseRepository { get; private set; }
         public ICourseTagRepository CourseTagRepository { get; private set; }
-        public ICourseTeacherRepository CourseTeacherRepository { get; private set; }
         public IEnrollmentRepository EnrollmentRepository { get; private set; }
         public ILessonRepository LessonRepository {  get; private set; }
         public IProgressRecordRepository ProgressRecordRepository { get; private set; }
         public IReviewRepository ReviewRepository { get; private set; }
         public ITagRepository TagRepository { get; private set; }
-        public ITeacherRepository TeacherRepository { get; private set; }
         public IRefreshTokenRepository RefreshTokenRepository { get; }
 
         public ITeacherRegistrationRequestRepository TeacherRegistrationRequestRepository { get; private set; }
 
         public ISetPasswordTokenRepository SetPasswordTokenRepository { get; private set; }
+
+        public ICourseAuthorRepository CourseAuthorRepository { get; }
 
 
 

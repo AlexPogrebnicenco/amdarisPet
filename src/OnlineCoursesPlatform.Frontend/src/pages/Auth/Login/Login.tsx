@@ -1,25 +1,24 @@
 import { Box, useTheme, Paper } from "@mui/material";
 import LoginForm from "./LoginForm";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import MatrixRain from "../../../components/common/MatrixRain/MatrixRain";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
+import { login } from "../../../services/authService";
 
 const Login = () => {
   const theme = useTheme();
-  const [showMatrix, setShowMatrix] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const from = location.state?.from?.pathname || "/";
+  const { setAuthState } = useAuth();
+  const from = location.state?.from?.pathname || "/app/home"; // Редиректим на защищённую home страницу
 
-  const handleLogin = async () => {
-    setShowMatrix(true);
-    setTimeout(() => {
-      navigate(from); 
-    }, 5000);
+  const handleLogin = async (formData: { email: string; password: string }) => {
+    try {
+      await login(formData, setAuthState);
+      navigate(from);
+    } catch (error) {
+      console.error('Login failed', error);
+    }
   };
-
-  if (showMatrix) return <MatrixRain />;
 
   return (
     <Box

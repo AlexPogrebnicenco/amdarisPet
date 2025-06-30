@@ -1,13 +1,7 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.IdentityModel.Tokens;
 using OnlineCoursesPlatform.API.Common;
-using OnlineCoursesPlatform.API.Middlewares;
 using OnlineCoursesPlatform.API.DependencyInjection.Swagger;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
-using OnlineCoursesPlatform.API.DependencyInjection.Authentication;
+using OnlineCoursesPlatform.API.Middlewares;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +12,12 @@ var builder = WebApplication.CreateBuilder(args);
 //    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
 //    .AddEnvironmentVariables();
 // Add services to the container
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddNewtonsoftJson()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new OnlineCoursesPlatform.API.Converters.DateTimeConverter());
+    });
 builder.Services.AddSingleton<ProblemDetailsFactory, CustomProblemDetailsFactory>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/apsnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -26,7 +25,7 @@ builder.Services.AddSwaggerWithCustomOptions();
 
 
 // Register App + Infra Layers
-builder.Services.AddApplication();
+builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure();
 builder.Services.AddLogging();
 

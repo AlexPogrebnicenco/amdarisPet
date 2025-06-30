@@ -2,11 +2,12 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using OnlineCoursesPlatform.Application.Abstractions.Repositories;
+using OnlineCoursesPlatform.Application.Common.Dto;
 using OnlineCoursesPlatform.Application.Features.TeacherRegistrationRequests.Dto;
 
 namespace OnlineCoursesPlatform.Application.Features.TeacherRegistrationRequests.Queries.Handlers
 {
-    public class GetPendingTeacherRequestsHandler : IRequestHandler<GetPendingTeacherRequestsQuery, List<TeacherRequestDto>>
+    public class GetPendingTeacherRequestsHandler : IRequestHandler<GetPendingTeacherRequestsQuery, PagedResult<TeacherRequestDto>>
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -19,13 +20,18 @@ namespace OnlineCoursesPlatform.Application.Features.TeacherRegistrationRequests
             _logger = logger;
         }
 
-        public async Task<List<TeacherRequestDto>> Handle(GetPendingTeacherRequestsQuery request, CancellationToken cancellationToken)
+        public async Task<PagedResult<TeacherRequestDto>> Handle(GetPendingTeacherRequestsQuery request, CancellationToken cancellationToken)
         {
-            var requests = await _unitOfWork.TeacherRegistrationRequestRepository.GetPendingRequestsAsync();
+            var (items, totalCount) = await _unitOfWork.TeacherRegistrationRequestRepository
+                .GetPendingRequestsAsync(request.Page, request.PageSize);
 
-            _logger.LogInformation("Loaded {Count} pending teacher requests.", requests.Count);
+            _logger.LogInformation("Loaded {Count} pending teacher requests for page {Page}.", items.Count, request.Page);
 
-            return _mapper.Map<List<TeacherRequestDto>>(requests);
+            return new PagedResult<TeacherRequestDto>
+            {
+                Items = _mapper.Map<List<TeacherRequestDto>>(items),
+                TotalCount = totalCount
+            };
         }
     }
 }

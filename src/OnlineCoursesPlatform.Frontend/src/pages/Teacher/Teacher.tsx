@@ -1,8 +1,9 @@
 import React from 'react'
+import AddCourseForm from './AddCourse/AddCourseForm'
 
 const Teacher = () => {
   return (
-    <div>Teacher page</div>
+    <AddCourseForm />
   )
 }
 

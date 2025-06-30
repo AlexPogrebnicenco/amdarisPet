@@ -17,7 +17,10 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.5")
+                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("Proxies:ChangeTracking", false)
+                .HasAnnotation("Proxies:CheckEquality", false)
+                .HasAnnotation("Proxies:LazyLoading", true)
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -107,6 +110,21 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.ToTable("Courses");
                 });
 
+            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.CourseAuthor", b =>
+                {
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CourseId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("CourseAuthors");
+                });
+
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.CourseTag", b =>
                 {
                     b.Property<int>("CourseId")
@@ -120,21 +138,6 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.HasIndex("TagId");
 
                     b.ToTable("CourseTags");
-                });
-
-            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.CourseTeacher", b =>
-                {
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TeacherId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CourseId", "TeacherId");
-
-                    b.HasIndex("TeacherId");
-
-                    b.ToTable("CourseTeachers");
                 });
 
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Enrollment", b =>
@@ -307,6 +310,9 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -314,36 +320,12 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.HasIndex("Name")
                         .IsUnique();
 
                     b.ToTable("Tags");
-                });
-
-            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Teacher", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("TeacherName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email")
-                        .IsUnique();
-
-                    b.ToTable("Teachers");
                 });
 
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.TeacherRegistrationRequest", b =>
@@ -463,6 +445,25 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.CourseAuthor", b =>
+                {
+                    b.HasOne("OnlineCoursesPlatform.Domain.Entities.Course", "Course")
+                        .WithMany("CourseAuthors")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OnlineCoursesPlatform.Domain.Entities.User", "User")
+                        .WithMany("CourseAuthors")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.CourseTag", b =>
                 {
                     b.HasOne("OnlineCoursesPlatform.Domain.Entities.Course", "Course")
@@ -480,25 +481,6 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("Tag");
-                });
-
-            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.CourseTeacher", b =>
-                {
-                    b.HasOne("OnlineCoursesPlatform.Domain.Entities.Course", "Course")
-                        .WithMany("CourseTeachers")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("OnlineCoursesPlatform.Domain.Entities.Teacher", "Teacher")
-                        .WithMany("CourseTeachers")
-                        .HasForeignKey("TeacherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Teacher");
                 });
 
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Enrollment", b =>
@@ -583,18 +565,31 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Tag", b =>
+                {
+                    b.HasOne("OnlineCoursesPlatform.Domain.Entities.Category", "Category")
+                        .WithMany("Tags")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Courses");
+
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Course", b =>
                 {
                     b.Navigation("Certificates");
 
-                    b.Navigation("CourseTags");
+                    b.Navigation("CourseAuthors");
 
-                    b.Navigation("CourseTeachers");
+                    b.Navigation("CourseTags");
 
                     b.Navigation("Enrollments");
 
@@ -613,14 +608,11 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.Navigation("CourseTags");
                 });
 
-            modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.Teacher", b =>
-                {
-                    b.Navigation("CourseTeachers");
-                });
-
             modelBuilder.Entity("OnlineCoursesPlatform.Domain.Entities.User", b =>
                 {
                     b.Navigation("Certificates");
+
+                    b.Navigation("CourseAuthors");
 
                     b.Navigation("Enrollments");
 

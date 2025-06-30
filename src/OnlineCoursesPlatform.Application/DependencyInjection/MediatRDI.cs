@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using OnlineCoursesPlatform.Application.Features.Teachers.Commands;
 using OnlineCoursesPlatform.Application.Features.Users.Commands;
 
 namespace OnlineCoursesPlatform.Application.DependencyInjection
