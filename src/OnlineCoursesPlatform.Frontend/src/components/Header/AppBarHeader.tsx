@@ -1,32 +1,25 @@
-import {
-  AppBar,
-  Box,
-  IconButton,
-  Toolbar,
-} from "@mui/material";
+import { AppBar, Box, IconButton, Toolbar } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useTheme } from "@mui/material/styles";
 import SearchBar from "../common/SearchBar/SearchBar";
 import HeaderActions from "./HeaderActions";
 
 interface AppBarHeaderProps {
-  handleDrawerToggle: () => void;
+   handleDrawerToggle: () => void;
   drawerWidth: number;
-  isMobileMenuOpen: boolean;
   mobileMenuId: string;
-  menuId: string;
-  handleProfileMenuOpen: (event: React.MouseEvent<HTMLElement>) => void;
-  handleMobileMenuOpen: (event: React.MouseEvent<HTMLElement>) => void;
+  isMobileMenuOpen: boolean;
+  onMobileMenuOpen: () => void;
+  onMobileMenuClose: () => void;
 }
 
 const AppBarHeader = ({
-  handleDrawerToggle,
+   handleDrawerToggle,
   drawerWidth,
-  isMobileMenuOpen,
   mobileMenuId,
-  menuId,
-  handleProfileMenuOpen,
-  handleMobileMenuOpen,
+  isMobileMenuOpen,
+  onMobileMenuOpen,
+  onMobileMenuClose,
 }: AppBarHeaderProps) => {
   const theme = useTheme();
 
@@ -34,6 +27,7 @@ const AppBarHeader = ({
     <AppBar
       position="fixed"
       sx={{
+        zIndex: 1500,
         width: { sm: `calc(100% - ${drawerWidth}px)` },
         ml: { sm: `${drawerWidth}px` },
         backgroundColor: theme.palette.background.default,
@@ -53,7 +47,6 @@ const AppBarHeader = ({
             aria-label="open drawer"
             edge="start"
             onClick={handleDrawerToggle}
-            // sx={{ mr: 2, display: { sm: "none" } }}
             sx={{
               position: "absolute",
               left: 0,
@@ -66,16 +59,12 @@ const AppBarHeader = ({
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          {/* Твоя иконка поиска */}
-          <SearchBar />
-
-          {/* Будущая дополнительная иконка */}
+          {/* <SearchBar /> */}
           <HeaderActions
-            isMobileMenuOpen={isMobileMenuOpen}
             mobileMenuId={mobileMenuId}
-            menuId={menuId}
-            onProfileMenuOpen={handleProfileMenuOpen}
-            onMobileMenuOpen={handleMobileMenuOpen}
+            isMobileMenuOpen={isMobileMenuOpen}
+            onMobileMenuOpen={onMobileMenuOpen}
+            onMobileMenuClose={onMobileMenuClose}
           />
         </Box>
       </Toolbar>

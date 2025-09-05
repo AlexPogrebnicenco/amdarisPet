@@ -17,14 +17,18 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
         private readonly IPasswordHasher _passwordHasher;
         private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
-        public RegisterUserHandler(IUnitOfWork unitOfWork, ILogger<RegisterUserHandler> logger, IMapper mapper, IPasswordHasher passwordHasher, IJwtTokenGenerator jwtTokenGenerator)
+        public RegisterUserHandler(
+            IUnitOfWork unitOfWork,
+            ILogger<RegisterUserHandler> logger,
+            IMapper mapper,
+            IPasswordHasher passwordHasher,
+            IJwtTokenGenerator jwtTokenGenerator)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
             _mapper = mapper;
             _passwordHasher = passwordHasher;
             _jwtTokenGenerator = jwtTokenGenerator;
-
         }
 
         public async Task<AuthResponse> Handle(RegisterUser request, CancellationToken cancellationToken)
@@ -43,14 +47,17 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
                 throw new InvalidOperationException("Passwords do not match.");
             }
 
+            // Хешируем пароль
             dto.Password = _passwordHasher.Hash(dto.Password);
 
+            // Маппим DTO в сущность
             var user = _mapper.Map<User>(dto);
             user.Role = dto.Role;
 
             await _unitOfWork.UserRepository.AddAsync(user);
             await _unitOfWork.SaveAsync();
 
+            // Генерируем токены
             var accessToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName, user.Role);
             var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
@@ -62,18 +69,22 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
                 IsRevoked = false
             };
 
-            
-
             await _unitOfWork.RefreshTokenRepository.AddAsync(refreshTokenEntity);
             await _unitOfWork.SaveAsync();
 
-            _logger.LogInformation("User registered : {Email}", user.Email);
+            _logger.LogInformation("User registered: {Email}", user.Email);
+
             return new AuthResponse
             {
                 AccessToken = accessToken,
-                AccessTokenExpiration = DateTime.UtcNow.AddMinutes(60),
+                AccessTokenExpiration = DateTime.UtcNow.AddMinutes(15),
                 RefreshToken = refreshToken,
-                RefreshTokenExpiration = refreshTokenEntity.ExpiresAt
+                RefreshTokenExpiration = refreshTokenEntity.ExpiresAt,
+                UserInfo = new UserAccountInfoDto
+                {
+                    UserName = user.UserName,
+                    AvatarUrl = user.AvatarUrl
+                }
             };
         }
     }

@@ -3,5 +3,5 @@ using OnlineCoursesPlatform.Application.Features.Users.Dto;
 
 namespace OnlineCoursesPlatform.Application.Features.Users.Commands
 {
-    public record UpdateUser(int Id, UpdateUserDto Dto) : IRequest<UserDto?>;
+    public record UpdateUser(int UserId, UpdateUserDto Dto) : IRequest<UserAccountInfoDto>;
 }

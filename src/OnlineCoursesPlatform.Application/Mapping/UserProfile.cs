@@ -13,14 +13,17 @@ namespace OnlineCoursesPlatform.Application.Mapping
             CreateMap<User, UserDto>();
             //DTO -> Entity
             CreateMap<CreateUserDto, User>();
-            CreateMap<UpdateUserDto, User>();
 
             // Auth 
             CreateMap<RegisterDto, User>();
             CreateMap<CreateUserFromGoogleDto, User>()
                 .ForMember(dest => dest.Password, opt => opt.MapFrom(_ => (string?)null))
                 .ForMember(dest => dest.Age, opt => opt.MapFrom(_ => (int?)null))
-                .ForMember(dest => dest.Gender, opt => opt.MapFrom(_ => (string?)null));
+                .ForMember(dest => dest.Gender, opt => opt.MapFrom(_ => (string?)null))
+                .ForMember(dest => dest.Role, opt => opt.MapFrom(_ => "User"))
+                .ForMember(dest => dest.IsApproved, opt => opt.MapFrom(_ => false))
+                .ForMember(dest => dest.ExternalProvider, opt => opt.MapFrom(_ => "Google"))
+                .ForMember(dest => dest.AvatarUrl, opt => opt.MapFrom(src => src.AvatarUrl));
         }
     }
 }

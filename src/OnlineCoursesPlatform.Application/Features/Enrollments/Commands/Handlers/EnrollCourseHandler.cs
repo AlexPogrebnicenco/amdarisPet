@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.Extensions.Logging;
 using OnlineCoursesPlatform.Application.Abstractions.Repositories;
+using OnlineCoursesPlatform.Application.Abstractions.Services;
 using OnlineCoursesPlatform.Domain.Entities;
 
 namespace OnlineCoursesPlatform.Application.Features.Enrollments.Commands.Handlers
@@ -9,11 +10,16 @@ namespace OnlineCoursesPlatform.Application.Features.Enrollments.Commands.Handle
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<EnrollCourseHandler> _logger;
+        private readonly IRealTimeNotifier _realTimeNotifier;
 
-        public EnrollCourseHandler(IUnitOfWork unitOfWork, ILogger<EnrollCourseHandler> logger)
+        public EnrollCourseHandler(
+            IUnitOfWork unitOfWork,
+            ILogger<EnrollCourseHandler> logger,
+            IRealTimeNotifier realTimeNotifier)
         {
             _unitOfWork = unitOfWork;
             _logger = logger;
+            _realTimeNotifier = realTimeNotifier;
         }
 
         public async Task<Unit> Handle(EnrollCourseCommand request, CancellationToken cancellationToken)
@@ -52,10 +58,28 @@ namespace OnlineCoursesPlatform.Application.Features.Enrollments.Commands.Handle
             await _unitOfWork.EnrollmentRepository.AddAsync(enrollment);
             await _unitOfWork.SaveAsync();
 
+            // Отправляем уведомление всем авторам курса
+            var authors = course.CourseAuthors;
+
+            if (authors == null || !authors.Any())
+            {
+                _logger.LogWarning("No authors found for CourseId: {CourseId}", request.CourseId);
+                throw new Exception("No authors found for this course.");
+            }
+
+            foreach (var author in authors)
+            {
+                await _realTimeNotifier.SendEnrollmentNotification(
+                    author.UserId,
+                    course.Title,
+                    user.Email,
+                    enrollment.EnrolledAt
+                );
+            }
+
             _logger.LogInformation("UserId: {UserId} successfully enrolled in CourseId: {CourseId}", request.UserId, request.CourseId);
 
             return Unit.Value;
         }
-
     }
 }

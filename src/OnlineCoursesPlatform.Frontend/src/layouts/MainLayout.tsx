@@ -1,19 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import { CssBaseline } from "@mui/material";
+import { CssBaseline, useMediaQuery } from "@mui/material";
 import Navbar from "../components/Navbar/Navbar";
 import AppBarHeader from "../components/Header/AppBarHeader";
 import MainField from "../components/MainField/MainField";
 import HideOnScroll from "../components/common/HideOnScroll/HideOnScroll";
+import { useTheme } from "@mui/material/styles";
 
 const drawerWidth = 220;
 
 const MainLayout: React.FC = () => {
+  const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-    useState<null | HTMLElement>(null);
+  const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleDrawerClose = () => {
     setIsClosing(true);
@@ -30,33 +31,40 @@ const MainLayout: React.FC = () => {
     }
   };
 
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
-  const menuId = "primary-search-account-menu";
+  const handleMobileMenuOpen = () => {
+    setIsMobileMenuOpen(true);
+  };
+
+  const handleMobileMenuClose = () => {
+    setIsMobileMenuOpen(false);
+  };
+
+  const handleMobileMenuToggle = () => {
+    setIsMobileMenuOpen((prev) => !prev);
+  };
+
   const mobileMenuId = "primary-search-account-menu-mobile";
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
+  useEffect(() => {
+    if (isDesktop && isMobileMenuOpen) {
+      handleMobileMenuClose();
+    }
+  }, [isDesktop]);
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       {/* <HideOnScroll> */}
-       
-        <AppBarHeader
-          handleDrawerToggle={handleDrawerToggle}
-          drawerWidth={drawerWidth}
-          isMobileMenuOpen={isMobileMenuOpen}
-          mobileMenuId={mobileMenuId}
-          menuId={menuId}
-          handleProfileMenuOpen={handleProfileMenuOpen}
-          handleMobileMenuOpen={handleMobileMenuOpen}
-        />
-       
+
+      <AppBarHeader
+        handleDrawerToggle={handleDrawerToggle}
+        drawerWidth={drawerWidth}
+        mobileMenuId={mobileMenuId}
+        isMobileMenuOpen={isMobileMenuOpen}
+        onMobileMenuOpen={handleMobileMenuToggle}
+        onMobileMenuClose={handleMobileMenuClose}
+      />
+
       {/* </HideOnScroll> */}
       {/* DRAWER */}
       <Navbar

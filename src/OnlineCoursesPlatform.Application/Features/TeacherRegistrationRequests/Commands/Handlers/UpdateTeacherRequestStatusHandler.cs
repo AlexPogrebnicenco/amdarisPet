@@ -6,6 +6,7 @@ using OnlineCoursesPlatform.Application.Abstractions.Repositories;
 using OnlineCoursesPlatform.Application.Abstractions.Services;
 using OnlineCoursesPlatform.Application.Settings;
 using OnlineCoursesPlatform.Domain.Entities;
+using OnlineCoursesPlatform.Domain.Enums;
 
 namespace OnlineCoursesPlatform.Application.Features.TeacherRegistrationRequests.Commands.Handlers
 {
@@ -38,54 +39,61 @@ namespace OnlineCoursesPlatform.Application.Features.TeacherRegistrationRequests
             if (teacherRequest == null)
                 throw new InvalidOperationException("Request not found.");
 
-            if (request.Status == "Approved")
+            if (teacherRequest.Status != TeacherRequestStatus.Pending)
+                throw new InvalidOperationException("Request has already been processed.");
+
+            switch (request.Status)
             {
-                // Проверяем нет ли уже такого пользователя
-                var existingUser = await _unitOfWork.UserRepository.GetByEmailAsync(teacherRequest.Email);
-                if (existingUser != null)
-                    throw new InvalidOperationException("User with this email already exists.");
+                case TeacherRequestStatus.Approved:
+                    {
+                        var existingUser = await _unitOfWork.UserRepository.GetByEmailAsync(teacherRequest.Email);
+                        if (existingUser != null)
+                            throw new InvalidOperationException("User with this email already exists.");
 
-                teacherRequest.Status = "Approved";
+                        teacherRequest.Status = TeacherRequestStatus.Approved;
 
-                var newUser = _mapper.Map<User>(teacherRequest);
+                        var newUser = _mapper.Map<User>(teacherRequest);
 
-                await _unitOfWork.UserRepository.AddAsync(newUser);
-                await _unitOfWork.SaveAsync();
+                        await _unitOfWork.UserRepository.AddAsync(newUser);
+                        await _unitOfWork.SaveAsync();
 
-                var token = Guid.NewGuid().ToString();
+                        var token = Guid.NewGuid().ToString();
 
-                var setPasswordToken = new SetPasswordToken
-                {
-                    Token = token,
-                    ExpiresAt = DateTime.UtcNow.AddDays(1),
-                    IsUsed = false,
-                    UserId = newUser.Id
-                };
+                        var setPasswordToken = new SetPasswordToken
+                        {
+                            Token = token,
+                            ExpiresAt = DateTime.UtcNow.AddDays(1),
+                            IsUsed = false,
+                            UserId = newUser.Id
+                        };
 
-                await _unitOfWork.SetPasswordTokenRepository.AddAsync(setPasswordToken);
-                await _unitOfWork.SaveAsync();
+                        await _unitOfWork.SetPasswordTokenRepository.AddAsync(setPasswordToken);
+                        await _unitOfWork.SaveAsync();
 
-                var passwordSetupLink = $"{_frontendSettings.BaseUrl}/set-password?token={token}";
+                        var passwordSetupLink = $"{_frontendSettings.BaseUrl}/set-password?token={token}";
 
-                await _emailService.SendEmailAsync(
-                    newUser.Email,
-                    "Set your password",
-                    $"<p>Hello {newUser.UserName},</p><p>Please set your password using the following link:</p><p><a href='{passwordSetupLink}'>{passwordSetupLink}</a></p>"
-                );
+                        await _emailService.SendEmailAsync(
+                            newUser.Email,
+                            "Set your password",
+                            $"<p>Hello {newUser.UserName},</p><p>Please set your password using the following link:</p><p><a href='{passwordSetupLink}'>{passwordSetupLink}</a></p>"
+                        );
 
-                _logger.LogInformation("Teacher request approved: {RequestId} | User created: {Email}", request.RequestId, newUser.Email);
-                _logger.LogInformation("Set password link sent to: {Email}", newUser.Email);
-            }
-            else if (request.Status == "Rejected")
-            {
-                teacherRequest.Status = "Rejected";
-                await _unitOfWork.SaveAsync();
+                        _logger.LogInformation("Teacher request approved: {RequestId} | User created: {Email}", request.RequestId, newUser.Email);
+                        _logger.LogInformation("Set password link sent to: {Email}", newUser.Email);
+                        break;
+                    }
 
-                _logger.LogInformation("Rejected teacher request: {RequestId}", request.RequestId);
-            }
-            else
-            {
-                throw new InvalidOperationException("Invalid status provided.");
+                case TeacherRequestStatus.Rejected:
+                    {
+                        teacherRequest.Status = TeacherRequestStatus.Rejected;
+                        await _unitOfWork.SaveAsync();
+
+                        _logger.LogInformation("Rejected teacher request: {RequestId}", request.RequestId);
+                        break;
+                    }
+
+                default:
+                    throw new InvalidOperationException("Invalid status provided.");
             }
 
             return Unit.Value;

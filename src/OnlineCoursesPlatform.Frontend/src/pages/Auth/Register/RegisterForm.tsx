@@ -1,10 +1,27 @@
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { registerSchema } from "./validationSchema";
-import { Box, Typography, MenuItem, useTheme } from "@mui/material";
+import {
+  Box,
+  Typography,
+  MenuItem,
+  useTheme,
+  Autocomplete,
+} from "@mui/material";
 import CustomTextField from "../../../components/common/CustomTextField/CustomTextField";
 import CommonButton from "../../../components/common/CommonButton/CommonButton";
 import type { InferType } from "yup";
+import CustomAutocomplete from "../../../components/common/CustomAutocomplete/CustomAutocomplete";
+
+const roles = [
+  { id: 1, label: "User" },
+  { id: 2, label: "Teacher" },
+];
+
+const genders = [
+  { id: 1, label: "Male" },
+  { id: 2, label: "Female" },
+];
 
 type RegisterFormInputs = InferType<typeof registerSchema>;
 
@@ -19,6 +36,7 @@ const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
     register,
     handleSubmit,
     formState: { errors },
+    control,
   } = useForm<RegisterFormInputs>({
     resolver: yupResolver(registerSchema),
   });
@@ -93,27 +111,43 @@ const RegisterForm = ({ onSuccess }: RegisterFormProps) => {
         helperText={errors.age?.message}
       />
 
-      <CustomTextField
-        label="Gender"
-        select
-        {...register("gender")}
-        error={!!errors.gender}
-        helperText={errors.gender?.message}
-      >
-        <MenuItem value="male">Male</MenuItem>
-        <MenuItem value="female">Female</MenuItem>
-      </CustomTextField>
+      <Controller
+        name="gender"
+        control={control}
+        render={({ field }) => (
+          <CustomAutocomplete
+            options={genders}
+            getOptionLabel={(option) => option.label}
+            value={genders.find((g) => g.label === field.value) || null}
+            onChange={(newValue) => field.onChange(newValue?.label ?? "")}
+            label="Gender"
+            placeholder="Select gender"
+            textFieldProps={{
+              error: !!errors.gender,
+              helperText: errors.gender?.message,
+            }}
+          />
+        )}
+      />
 
-      <CustomTextField
-        label="Role"
-        select
-        {...register("role")}
-        error={!!errors.role}
-        helperText={errors.role?.message}
-      >
-        <MenuItem value="User">User</MenuItem>
-        <MenuItem value="Teacher">Teacher</MenuItem>
-      </CustomTextField>
+      <Controller
+        name="role"
+        control={control}
+        render={({ field }) => (
+          <CustomAutocomplete
+            options={roles}
+            getOptionLabel={(option) => option.label}
+            value={roles.find((r) => r.label === field.value) || null}
+            onChange={(newValue) => field.onChange(newValue?.label ?? "")}
+            label="Role"
+            placeholder="Select a role"
+            textFieldProps={{
+              error: !!errors.role,
+              helperText: errors.role?.message,
+            }}
+          />
+        )}
+      />
 
       <Box
         sx={{

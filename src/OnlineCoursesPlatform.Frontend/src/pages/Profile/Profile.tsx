@@ -3,20 +3,27 @@ import CommonButton from "../../components/common/CommonButton/CommonButton";
 import ProfileTabs from "./ProfileTabs";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../api/axios";
-import { useAuth } from "../../context/AuthContext"; 
+import { useAuth } from "../../context/AuthContext";
+import { useCourse } from "../../context/CourseContext";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import EditAccountModal from "./EditAccountModal";
+import { useState } from "react";
 
 const Profile = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { logout } = useAuth(); //  подключил logout из контекста
+  const { logout, avatarUrl, userName } = useAuth();
+  const { resetCourseId } = useCourse();
+  const [editOpen, setEditOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
-      await axiosInstance.get('/auth/logout'); // запрос на бэк для очистки cookies
+      await axiosInstance.get("/auth/logout"); // запрос на бэк для очистки cookies
       logout(); //  вызываем глобальный logout
+      resetCourseId(); // сбрасываем выбранный курс
       navigate("/login"); // перенаправляем
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
     }
   };
 
@@ -33,21 +40,28 @@ const Profile = () => {
         }}
       >
         <Avatar
-          src="https://mui.com/static/images/avatar/1.jpg"
-          sx={{ width: 100, height: 100 }}
-        />
+          src={avatarUrl || undefined}
+          sx={{
+            width: 100,
+            height: 100,
+            bgcolor: avatarUrl ? "transparent" : theme.palette.grey[400],
+          }}
+        >
+          {!avatarUrl && <AccountCircleIcon sx={{ fontSize: 110 }} />}
+        </Avatar>
         <Box sx={{ flexGrow: 1 }}>
           <Typography
             variant="h4"
             gutterBottom
             sx={{ color: theme.palette.text.secondary }}
           >
-            Alexandru Pogrebnicenco
+            {userName}
           </Typography>
 
           <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
             <CommonButton onClick={handleSignOut}>SIGN OUT</CommonButton>
-            <CommonButton>EDIT PROFILE</CommonButton>
+            <CommonButton onClick={() => setEditOpen(true)}>EDIT PROFILE</CommonButton>
+            <EditAccountModal open={editOpen} onClose={() => setEditOpen(false)} />
           </Box>
         </Box>
       </Box>

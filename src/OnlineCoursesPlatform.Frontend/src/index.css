@@ -1,6 +1,10 @@
 /* * {
   outline: 1px solid red !important;
 } */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   font-family: 'Roboto', 'Oxygen',
@@ -37,4 +41,11 @@ code {
 /* При наведении */
 ::-webkit-scrollbar-thumb:hover {
   background-color: #2A3746;
+}
+
+/* Выпадающее меню уже введенных значений */
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px #1a1d20 inset !important; /* Цвет фона */
+  -webkit-text-fill-color: #FFFFFF !important; /* Цвет текста */
+  transition: background-color 5000s ease-in-out 0s; /* Чтобы фон не мигал */
 }

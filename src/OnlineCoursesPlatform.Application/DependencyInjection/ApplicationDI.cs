@@ -17,7 +17,6 @@ public static class ApplicationDI
         services.AddMediatRService();
         services.AddFluentValidation();
         services.AddAutoMapperServices();
-        
 
         // Connect EmailSettings
         services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));

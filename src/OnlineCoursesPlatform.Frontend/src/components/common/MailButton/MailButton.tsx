@@ -67,10 +67,13 @@ const MailButton = () => {
       </Tooltip>
 
       <BasicMenu
+        disableScrollLock
         anchorEl={anchorEl}
         open={open}
         handleClose={handleClose}
         menuItems={messages}
+        sx={{ zIndex: 1600 }}
+        onSelect={() => console.log("Hi")}
       />
     </>
   );

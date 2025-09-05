@@ -10,5 +10,12 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
         public TagRepository(AppDbContext context) : base(context)
         {
         }
+        public async Task<List<Tag>> GetAllOrderedAsync()
+        {
+            return await _context.Tags
+                .Include(t => t.Category)
+                .OrderBy(t => t.Name)
+                .ToListAsync();
+        }
     }
 }

@@ -8,21 +8,23 @@ import {
   useTheme,
   AvatarGroup,
 } from "@mui/material";
-import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import ChangeHistoryOutlinedIcon from "@mui/icons-material/ChangeHistoryOutlined";
-import MenuBookRoundedIcon from "@mui/icons-material/MenuBookRounded";
 import PlayCircleOutlineIcon from "@mui/icons-material/PlayCircleOutline";
+import PersonIcon from "@mui/icons-material/Person";
+import { courseCategories } from "../../../constants/courseCategories";
+import { difficultyLevels } from "../../../constants/difficultyLevels";
 
 interface BasicCardProps {
   title: string;
   description: string;
   modules: number;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
-  duration: string;
-  tag?: string;
+  duration?: string;
+  category?: string;
   isNew?: boolean;
   isPro?: boolean;
-  avatars: string[]; // array of image URLs
+  avatars?: string[]; // array of image URLs
+  onClick?: () => void;
 }
 
 const BasicCard: React.FC<BasicCardProps> = ({
@@ -31,10 +33,11 @@ const BasicCard: React.FC<BasicCardProps> = ({
   modules,
   difficulty,
   duration,
-  tag = "Fullstack",
+  category,
   isNew = false,
   isPro = false,
   avatars,
+  onClick,
 }) => {
   const theme = useTheme();
   const cardRef = useRef<HTMLDivElement>(null);
@@ -67,7 +70,13 @@ const BasicCard: React.FC<BasicCardProps> = ({
       : description;
 
   return (
-    <Box sx={{ position: "relative" }}>
+    <Box
+      sx={{
+        position: "relative",
+        cursor: onClick ? "pointer" : "default",
+      }}
+      onClick={onClick}
+    >
       {/* BADGES вне карточки, но внутри обёртки */}
       <Box
         sx={{
@@ -128,6 +137,12 @@ const BasicCard: React.FC<BasicCardProps> = ({
           minHeight: 250,
           maxHeight: 250,
           overflow: "hidden",
+          transition: "background-color 0.3s ease", // плавный переход
+          "&:hover": {
+            backgroundColor: onClick
+              ? theme.palette.card.hoverBackground
+              : theme.palette.card.hoverBackground,
+          },
         }}
       >
         {/* ...весь остальной контент карточки — title, description, meta, avatars */}
@@ -158,7 +173,7 @@ const BasicCard: React.FC<BasicCardProps> = ({
           sx={{
             display: "flex",
             justifyContent: "space-between",
-            alignItems: "flex-end", // прижимает левый блок вниз, к аватарам
+            alignItems: "flex-end",
             width: "100%",
           }}
         >
@@ -172,16 +187,22 @@ const BasicCard: React.FC<BasicCardProps> = ({
               alignItems: "flex-end",
             }}
           >
-            {/* Tag */}
-            <Box sx={{ display: "flex", alignItems: "flex-end", gap: 0.5 }}>
-              <MenuBookRoundedIcon sx={{ fontSize: 12, color: "#4caf50" }} />
-              <Typography
-                variant="body2"
-                sx={{ color: "#A5B1C2", fontSize: 11, lineHeight: 1 }}
-              >
-                {tag}
-              </Typography>
-            </Box>
+            {/* Category */}
+            {(() => {
+              const matched = courseCategories.find((c) => c.name === category);
+
+              return (
+                <Box sx={{ display: "flex", alignItems: "flex-end", gap: 0.5 }}>
+                  {matched && <>{matched.icon}</>}
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "#A5B1C2", fontSize: 11, lineHeight: 1 }}
+                  >
+                    {category}
+                  </Typography>
+                </Box>
+              );
+            })()}
 
             {/* Lessons */}
             <Box sx={{ display: "flex", alignItems: "flex-end", gap: 0.5 }}>
@@ -195,46 +216,54 @@ const BasicCard: React.FC<BasicCardProps> = ({
             </Box>
 
             {/* Difficulty */}
-            <Box sx={{ display: "flex", alignItems: "flex-end", gap: 0.5 }}>
-              <ChangeHistoryOutlinedIcon
-                sx={{ fontSize: 12, color: "#A2A226" }}
-              />
-              <Typography
-                variant="body2"
-                sx={{ color: "#A5B1C2", fontSize: 11, lineHeight: 1 }}
-              >
-                {difficulty}
-              </Typography>
-            </Box>
-
-            {/* Duration */}
-            <Box sx={{ display: "flex", alignItems: "flex-end", gap: 0.5 }}>
-              <HourglassEmptyIcon sx={{ fontSize: 12, color: "#90CAF9" }} />
-              <Typography
-                variant="body2"
-                sx={{ color: "#A5B1C2", fontSize: 11, lineHeight: 1 }}
-              >
-                {duration}
-              </Typography>
-            </Box>
+            {(() => {
+              const matched = difficultyLevels.find(
+                (d) => d.level === difficulty
+              );
+              return (
+                <Box sx={{ display: "flex", alignItems: "flex-end", gap: 0.5 }}>
+                  {matched?.icon}
+                  <Typography
+                    variant="body2"
+                    sx={{ color: "#A5B1C2", fontSize: 11, lineHeight: 1 }}
+                  >
+                    {difficulty}
+                  </Typography>
+                </Box>
+              );
+            })()}
           </Box>
 
           {/* Аватары */}
 
           <AvatarGroup max={isTight ? 1 : 4} spacing="small">
-            {avatars.map((src, index) => (
-              <Tooltip key={index} title={`Contributor ${index + 1}`}>
-                <Avatar
-                  alt={`avatar-${index}`}
-                  src={src}
-                  sx={{
-                    width: 48,
-                    height: 48,
-                    border: "2px solid #14151A",
-                  }}
-                />
-              </Tooltip>
-            ))}
+            {avatars?.length ? (
+              avatars.map((src, index) => (
+                <Tooltip key={index} title={`Contributor ${index + 1}`}>
+                  <Avatar
+                    alt={`avatar-${index}`}
+                    src={src ?? undefined}
+                    sx={{
+                      width: 48,
+                      height: 48,
+                      border: "2px solid #14151A",
+                    }}
+                  >
+                    {!src && <PersonIcon sx={{ fontSize: 20 }} />}
+                  </Avatar>
+                </Tooltip>
+              ))
+            ) : (
+              <Avatar
+                sx={{
+                  width: 48,
+                  height: 48,
+                  border: "2px solid #14151A",
+                }}
+              >
+                <PersonIcon sx={{ fontSize: 20 }} />
+              </Avatar>
+            )}
           </AvatarGroup>
         </Box>
       </Box>

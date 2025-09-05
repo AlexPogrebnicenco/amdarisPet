@@ -1,16 +1,29 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Divider, useMediaQuery, useTheme } from "@mui/material";
-import IconFilterGroup from "./IconFilterGroup";
+import IconFilterGroup from "../../components/common/IconFilterGroup/IconFilterGroup";
 import ViewMenuButton from "../../components/common/ViewMenuButton/ViewMenuButton";
 import SearchFilter from "../../components/common/SearchFiler/SearchFilter";
 import SortOrderMenu from "../../components/common/SortOrderMenu/SortOrderMenu";
 
-const CoursesFiltersPanel: React.FC = () => {
+interface CoursesFiltersPanelProps {
+  onSortChange: (sort: string) => void;
+  onTagChange: (tag: string | null) => void;
+  onSearch: (query: string) => void;
+}
+
+const CoursesFiltersPanel: React.FC<CoursesFiltersPanelProps> = ({
+  onSortChange,
+  onTagChange,
+  onSearch,
+}) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
+  const [selectedSort, setSelectedSort] = useState("lastCreated");
+
   return (
     <>
-      {/* Divider */}
       <Divider />
 
       <Box sx={{ overflowX: isMobile ? "auto" : "visible", width: "100%" }}>
@@ -23,8 +36,8 @@ const CoursesFiltersPanel: React.FC = () => {
             gap: 2,
             mt: 1,
             mb: 1,
-            maxWidth: "100%", // 🔹 важно!
-            overflowX: isMobile ? "auto" : "visible", // 🔹 именно тут скролл
+            maxWidth: "100%",
+            overflowX: isMobile ? "auto" : "visible",
           }}
         >
           {/* Left side: filters */}
@@ -35,20 +48,45 @@ const CoursesFiltersPanel: React.FC = () => {
               alignItems: "center",
               gap: 1,
               height: 32,
-              flexShrink: 0, // 🔹 не даёт растягивать родителя
+              flexShrink: 0,
             }}
           >
-            <ViewMenuButton />
-            <IconFilterGroup />
+            <ViewMenuButton
+              onClearFilters={() => {
+                onTagChange(null);
+                setSelectedTagId(null);
+                setSearchTerm("");
+                onSearch("");
+              }}
+              onRestoreDefaults={() => {
+                onTagChange(null);
+                setSelectedTagId(null);
+                setSearchTerm("");
+                onSearch("");
+                onSortChange("lastCreated");
+                setSelectedSort("lastCreated");
+              }}
+            />
+            <IconFilterGroup
+              selected={selectedTagId}
+              setSelected={setSelectedTagId}
+              onTagSelect={onTagChange}
+            />
           </Box>
 
-          
-            <SearchFilter />
-          
+          <SearchFilter
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            onSearch={onSearch}
+          />
 
-        
-            <SortOrderMenu />
-          
+          <SortOrderMenu
+            onChange={(value) => {
+              setSelectedSort(value);
+              onSortChange(value);
+            }}
+            defaultValue={selectedSort}
+          />
         </Box>
       </Box>
 

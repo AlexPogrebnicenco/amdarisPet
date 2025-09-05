@@ -16,7 +16,7 @@ const MainField: React.FC<MainFieldProps> = ({ drawerWidth }) => {
 
   const title = currentItem?.label;
   const description = currentItem?.description;
-  const TabsComponent = currentItem?.tabsComponent;
+  // const TabsComponent = currentItem?.tabsComponent;
 
   return (
     <Box
@@ -29,7 +29,7 @@ const MainField: React.FC<MainFieldProps> = ({ drawerWidth }) => {
     >
       <Toolbar />
 
-      {title && (
+      {/* {title && (
         <Typography
           variant="h4"
           gutterBottom
@@ -45,9 +45,9 @@ const MainField: React.FC<MainFieldProps> = ({ drawerWidth }) => {
             {description}
           </Typography>
         </Box>
-      )}
+      )} */}
 
-      {TabsComponent && <TabsComponent />}
+      {/* {TabsComponent && <TabsComponent />} */}
 
       <Box sx={{ mt: 1 }}>
         <Outlet />

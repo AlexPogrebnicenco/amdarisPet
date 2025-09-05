@@ -1,7 +1,6 @@
 import { AxiosError, type AxiosRequestConfig } from "axios";
 import axiosInstance from "./axios";
 import {
-  getRefreshToken,
   saveTokens,
 } from "../services/tokenService";
 import { useEffect } from "react";
@@ -25,23 +24,19 @@ export const useAxiosInterceptor = () => {
           originalRequest._retry = true;
 
           try {
-            const refreshToken = getRefreshToken();
-            if (!refreshToken) throw new Error("Refresh token not found");
-
             const response = await axiosInstance.post<RefreshResponse>(
-              "/auth/refresh",
-              { refreshToken }
+              "/auth/refresh-token"
             );
 
-            const { accessToken, refreshToken: newRefreshToken } = response.data;
-            saveTokens(accessToken, newRefreshToken);
+            const { accessToken } = response.data;
+            saveTokens(accessToken); // Сохраняем только accessToken
 
             originalRequest.headers = originalRequest.headers || {};
             originalRequest.headers.Authorization = `Bearer ${accessToken}`;
 
             return axiosInstance(originalRequest);
           } catch (refreshError) {
-            logout(); // ✅ Авто-logout через контекст
+            logout(); // Автоматический logout
             return Promise.reject(refreshError);
           }
         }

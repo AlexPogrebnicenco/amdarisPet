@@ -5,5 +5,6 @@ namespace OnlineCoursesPlatform.Application.Abstractions.Repositories
 {
     public interface ITagRepository : IRepositoryEF<Tag>
     {
+        Task<List<Tag>> GetAllOrderedAsync();
     }
 }

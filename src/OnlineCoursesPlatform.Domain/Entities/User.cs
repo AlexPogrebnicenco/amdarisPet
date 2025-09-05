@@ -14,6 +14,8 @@
         public string? ExternalProvider { get; set; }
 
         public bool IsApproved { get; set; } = false;
+        public string? AvatarUrl { get; set; }
+
 
         public virtual ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public virtual ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();

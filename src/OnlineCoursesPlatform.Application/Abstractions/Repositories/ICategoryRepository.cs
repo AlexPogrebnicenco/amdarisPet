@@ -5,5 +5,6 @@ namespace OnlineCoursesPlatform.Application.Abstractions.Repositories
 {
     public interface ICategoryRepository : IRepositoryEF<Category>
     {
+        Task<List<Category>> GetAllOrderedAsync();
     }
 }

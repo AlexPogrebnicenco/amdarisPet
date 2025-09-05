@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OnlineCoursesPlatform.Application.Abstractions.Repositories;
 using OnlineCoursesPlatform.Domain.Entities;
+using OnlineCoursesPlatform.Domain.Enums;
 using OnlineCoursesPlatform.Infrastructure.Persistence;
 
 namespace OnlineCoursesPlatform.Infrastructure.Repositories
@@ -19,12 +20,13 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
 
         public async Task<(List<TeacherRegistrationRequest> Items, int TotalCount)> GetPendingRequestsAsync(int page, int pageSize)
         {
-            var query = _context.TeacherRegistrationRequests.Where(r => r.Status == "Pending");
+            var query = _context.TeacherRegistrationRequests
+              .Where(r => r.Status == TeacherRequestStatus.Pending);
 
             var totalCount = await query.CountAsync();
 
             var items = await query
-                .OrderByDescending(r => r.RequestedAt) // Самые свежие заявки первыми
+                .OrderByDescending(r => r.RequestedAt)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

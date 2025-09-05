@@ -5,6 +5,7 @@ import CustomTextField from "../../../components/common/CustomTextField/CustomTe
 import CommonButton from "../../../components/common/CommonButton/CommonButton";
 import { toast } from "react-toastify";
 import { forgotPassword } from "../../../services/authService";
+import { useNavigate } from "react-router-dom";
 
 interface ForgotPasswordDto {
   email: string;
@@ -12,7 +13,7 @@ interface ForgotPasswordDto {
 
 const ForgotPasswordPage = () => {
   const theme = useTheme();
-
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -25,6 +26,7 @@ const ForgotPasswordPage = () => {
       await forgotPassword(data.email);
       toast.success("Password reset link has been sent to your email.");
       reset();
+      navigate("/login");
     } catch (error: any) {
       console.error("Error requesting password reset", error);
       toast.error(

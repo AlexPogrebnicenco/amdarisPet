@@ -15,9 +15,17 @@ namespace OnlineCoursesPlatform.Application.Features.Courses.Validators
                 .NotEmpty().WithMessage("Description is required.")
                 .MaximumLength(4000).WithMessage("Description must not exceed 4000 characters.");
 
+            RuleFor(x => x.TagIds)
+            .NotEmpty().WithMessage("At least one tag must be selected.");
+
             RuleForEach(x => x.TagIds)
                  .GreaterThan(0).WithMessage("Tag ID must be greater than 0.");
 
+            RuleFor(x => x.Difficulty)
+                 .IsInEnum().WithMessage("Difficulty must be one of: Beginner, Intermediate, Advanced.");
+            RuleFor(x => x.About)
+                 .MaximumLength(4000)
+                 .WithMessage("About must not exceed 4000 characters.");
         }
     }
 }

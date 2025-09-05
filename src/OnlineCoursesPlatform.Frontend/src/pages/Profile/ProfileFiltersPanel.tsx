@@ -38,10 +38,10 @@ const ProfileFiltersPanel: React.FC = () => {
               flexShrink: 0, // 🔹 не даёт растягивать родителя
             }}
           >
-            <ViewMenuButton />
+            {/* <ViewMenuButton /> */}
           </Box>
-            <SearchFilter />
-            <SortOrderMenu />
+            {/* <SearchFilter /> */}
+            {/* <SortOrderMenu /> */}
           
         </Box>
       </Box>

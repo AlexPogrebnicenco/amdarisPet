@@ -80,6 +80,12 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("About")
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)")
+                        .HasDefaultValue("Nothing about this course");
+
                     b.Property<int?>("CategoryId")
                         .HasColumnType("int");
 
@@ -97,6 +103,12 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(4000)
                         .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("Difficulty")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Beginner");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -168,6 +180,10 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
@@ -178,14 +194,23 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.Property<int>("OrderNumber")
                         .HasColumnType("int");
 
+                    b.Property<string>("Resources")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<string>("VideoUrls")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CourseId");
+                    b.HasIndex("CourseId", "OrderNumber")
+                        .IsUnique();
 
                     b.ToTable("Lessons");
                 });
@@ -355,8 +380,7 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
                     b.Property<string>("Status")
                         .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
+                        .HasColumnType("nvarchar(max)")
                         .HasDefaultValue("Pending");
 
                     b.Property<string>("UserName")
@@ -379,6 +403,10 @@ namespace OnlineCoursesPlatform.Infrastructure.Migrations
 
                     b.Property<int?>("Age")
                         .HasColumnType("int");
+
+                    b.Property<string>("AvatarUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
 
                     b.Property<string>("Email")
                         .IsRequired()

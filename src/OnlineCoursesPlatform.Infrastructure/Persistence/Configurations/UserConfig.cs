@@ -19,12 +19,17 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence.Configurations
                 .HasMaxLength(100);
 
             builder.Property(x => x.Role)
-           .IsRequired()
-           .HasMaxLength(50);
+                .IsRequired()
+                .HasMaxLength(50);
 
             builder.Property(u => u.ExternalProvider)
                .HasMaxLength(50)
                .IsRequired(false);
+
+            builder.Property(u => u.AvatarUrl)
+               .HasMaxLength(500)
+               .IsRequired(false);
+
 
             builder.HasIndex(x => x.Email).IsUnique();
 

@@ -1,7 +1,9 @@
-﻿namespace OnlineCoursesPlatform.Application.Features.TeacherRegistrationRequests.Dto
+﻿using OnlineCoursesPlatform.Domain.Enums;
+
+namespace OnlineCoursesPlatform.Application.Features.TeacherRegistrationRequests.Dto
 {
     public class UpdateTeacherRequestStatusDto
     {
-        public string Status { get; set; } = null!;
+        public TeacherRequestStatus Status { get; set; }
     }
 }

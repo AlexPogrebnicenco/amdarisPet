@@ -1,22 +1,33 @@
-import { Box, useTheme, Paper } from "@mui/material";
+import {
+  Box,
+  useTheme,
+  Paper,
+  Backdrop,
+  CircularProgress,
+} from "@mui/material";
 import LoginForm from "./LoginForm";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { login } from "../../../services/authService";
+import { useState } from "react";
 
 const Login = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
   const { setAuthState } = useAuth();
-  const from = location.state?.from?.pathname || "/app/home"; // Редиректим на защищённую home страницу
+  const from = location.state?.from?.pathname || "/app/home";
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (formData: { email: string; password: string }) => {
     try {
+      setLoading(true);
       await login(formData, setAuthState);
       navigate(from);
     } catch (error) {
-      console.error('Login failed', error);
+      console.error("Login failed", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,6 +56,20 @@ const Login = () => {
       >
         <LoginForm onSuccess={handleLogin} />
       </Paper>
+
+      {/* Лоадер поверх всей разметки */}
+      <Backdrop
+        open={loading}
+        sx={{
+          position: "absolute",
+          color: "#fff",
+          zIndex: 10,
+          backgroundColor: "rgba(0,0,0,0.6)", // затемнение
+          borderRadius: 3,
+        }}
+      >
+        <CircularProgress sx={{ color: "#0369A1" }} />
+      </Backdrop>
     </Box>
   );
 };

@@ -4,6 +4,7 @@ using OnlineCoursesPlatform.Application.Abstractions.Repositories;
 using OnlineCoursesPlatform.Application.Abstractions.Security;
 using OnlineCoursesPlatform.Application.Common.Exceptions;
 using OnlineCoursesPlatform.Application.Features.Auth.Dto;
+using OnlineCoursesPlatform.Application.Features.Users.Dto;
 using OnlineCoursesPlatform.Domain.Entities;
 
 namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
@@ -16,11 +17,10 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
         private readonly ILogger<LoginUserHandler> _logger;
 
         public LoginUserHandler(
-              IUnitOfWork unitOfWork,
+            IUnitOfWork unitOfWork,
             IPasswordHasher passwordHasher,
             IJwtTokenGenerator jwtTokenGenerator,
-            ILogger<LoginUserHandler> logger
-            )
+            ILogger<LoginUserHandler> logger)
         {
             _unitOfWork = unitOfWork;
             _passwordHasher = passwordHasher;
@@ -48,7 +48,7 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             if (user.Password == null)
             {
                 _logger.LogError("Login failed: user {Email} has no password set, but is not an external provider.", dto.Email);
-                throw new UnauthenticatedException("Invalid credentials"); 
+                throw new UnauthenticatedException("Invalid credentials");
             }
 
             if (!_passwordHasher.Verify(dto.Password, user.Password))
@@ -57,11 +57,7 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
                 throw new UnauthenticatedException("Invalid credentials");
             }
 
-            if (dto.Email.Contains("fail"))
-            {
-                throw new Exception("Test transaction failure.");
-            }
-
+            // Генерация токенов
             var accessToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName, user.Role);
             var refreshToken = _jwtTokenGenerator.GenerateRefreshToken();
 
@@ -79,9 +75,14 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             return new AuthResponse
             {
                 AccessToken = accessToken,
-                AccessTokenExpiration = DateTime.UtcNow.AddMinutes(60),
+                AccessTokenExpiration = DateTime.UtcNow.AddMinutes(15), 
                 RefreshToken = refreshToken,
-                RefreshTokenExpiration = refreshTokenEntity.ExpiresAt
+                RefreshTokenExpiration = refreshTokenEntity.ExpiresAt,
+                UserInfo = new UserAccountInfoDto
+                {
+                    UserName = user.UserName,
+                    AvatarUrl = user.AvatarUrl
+                }
             };
         }
     }

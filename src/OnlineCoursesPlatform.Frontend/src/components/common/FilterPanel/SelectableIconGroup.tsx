@@ -1,42 +1,23 @@
 import React, { useState } from "react";
 import { Box, IconButton } from "@mui/material";
-import {
-  SiReact,
-  SiJavascript,
-  SiDotnet,
-  SiTypescript,
-  SiTailwindcss,
-} from "react-icons/si";
 
-const techIcons = [
-  {
-    id: 0,
-    label: "react",
-    icon: <SiReact size={18} style={{ color: "#00D8FF" }} />,
-  },
-  {
-    id: 1,
-    label: "ts",
-    icon: <SiTypescript size={18} style={{ color: "#007BCD" }} />,
-  },
-  {
-    id: 2,
-    label: "js",
-    icon: <SiJavascript size={18} style={{ color: "#FFD600" }} />,
-  },
-  {
-    id: 3,
-    label: "tailwind",
-    icon: <SiTailwindcss size={18} style={{ color: "#00BCFF" }} />,
-  },
-  {
-    id: 4,
-    label: "dotnet",
-    icon: <SiDotnet size={18} style={{ color: "#9B6AEF" }} />,
-  },
-];
+interface IconItem {
+  id: number;
+  label: string;
+  icon: React.ReactNode;
+}
 
-const IconFilterGroup: React.FC = () => {
+interface SelectableIconGroupProps {
+  icons: IconItem[];
+  onSelect: (selectedLabel: string) => void;
+  activeColor?: string;
+}
+
+const SelectableIconGroup: React.FC<SelectableIconGroupProps> = ({
+  icons,
+  onSelect,
+  activeColor = "#1c1c1c",
+}) => {
   const [selected, setSelected] = useState<number | null>(null);
 
   return (
@@ -49,14 +30,15 @@ const IconFilterGroup: React.FC = () => {
         height: "100%",
       }}
     >
-      {techIcons.map(({ id, icon, label }, index, arr) => {
+      {icons.map(({ id, icon, label }, index, arr) => {
         const isActive = selected === id;
+
         return (
           <Box
             key={id}
             onClick={() => {
               setSelected(id);
-              console.log(`Clicked on: /courses?tech=${label}`);
+              onSelect(label);
             }}
             sx={{
               display: "flex",
@@ -66,10 +48,10 @@ const IconFilterGroup: React.FC = () => {
               cursor: "pointer",
               borderRight:
                 index !== arr.length - 1 ? "1px solid #33363E" : "none",
-              backgroundColor: isActive ? "#1c1c1c" : "transparent",
+              backgroundColor: isActive ? activeColor : "transparent",
               transition: "background-color 0.2s ease",
               "&:hover": {
-                backgroundColor: "#1c1c1c",
+                backgroundColor: activeColor,
               },
               "&:hover .icon": {
                 opacity: 1,
@@ -105,4 +87,4 @@ const IconFilterGroup: React.FC = () => {
   );
 };
 
-export default IconFilterGroup;
+export default SelectableIconGroup;

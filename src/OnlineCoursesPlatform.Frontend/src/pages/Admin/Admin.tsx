@@ -1,9 +1,20 @@
 import { useEffect, useState } from "react";
-import { Box, Divider, Grid, Typography, useTheme } from "@mui/material";
+import {
+  Box,
+  CircularProgress,
+  Divider,
+  Grid,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { AnimatePresence, motion } from "framer-motion";
 import TeacherRequestCard from "../../components/common/TeacherRequestCard/TeacherRequestCard";
-import { getPendingTeacherRequests, updateTeacherRequestStatus, type TeacherRequestDto } from "../../services/teacherRequestService";
+import {
+  getPendingTeacherRequests,
+  updateTeacherRequestStatus,
+  type TeacherRequestDto,
+} from "../../services/teacherRequestService";
 
 const PAGE_SIZE = 10;
 
@@ -11,6 +22,7 @@ const Admin = () => {
   const [requests, setRequests] = useState<TeacherRequestDto[]>([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [isLoadingFirstPage, setIsLoadingFirstPage] = useState(true);
   const theme = useTheme();
 
   useEffect(() => {
@@ -19,6 +31,7 @@ const Admin = () => {
 
   const loadRequests = async () => {
     try {
+      // await new Promise((res) => setTimeout(res, 5000));
       const response = await getPendingTeacherRequests(page, PAGE_SIZE);
       setRequests((prev) => [...prev, ...response.items]);
 
@@ -29,6 +42,8 @@ const Admin = () => {
       }
     } catch (error) {
       console.error("Error fetching teacher requests", error);
+    } finally {
+      setIsLoadingFirstPage(false);
     }
   };
 
@@ -52,7 +67,11 @@ const Admin = () => {
 
   return (
     <Box>
-      <Typography variant="h4" gutterBottom sx={{ color: theme.palette.text.secondary }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ color: theme.palette.text.secondary }}
+      >
         Teacher Approvals
       </Typography>
       <Divider sx={{ mb: 2 }} />
@@ -61,8 +80,24 @@ const Admin = () => {
         dataLength={requests.length}
         next={loadRequests}
         hasMore={hasMore}
-        loader={<h4>Loading...</h4>}
-        endMessage={<p style={{ textAlign: "center" }}><b>All requests loaded.</b></p>}
+        loader={
+          <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+            <CircularProgress />
+          </Box>
+        }
+        endMessage={
+          requests.length > 0 ? (
+            <Typography
+              sx={{
+                textAlign: "center",
+                my: 4,
+                color: theme.palette.text.secondary,
+              }}
+            >
+              <b>All requests loaded.</b>
+            </Typography>
+          ) : null
+        }
       >
         <Grid container spacing={2}>
           <AnimatePresence>
@@ -88,8 +123,8 @@ const Admin = () => {
         </Grid>
       </InfiniteScroll>
 
-      {requests.length === 0 && (
-        <Typography variant="h6" sx={{ mt: 4 }}>
+      {!isLoadingFirstPage && requests.length === 0 && (
+        <Typography variant="h6" sx={{ mt: 4 }} textAlign={"center"} >
           No pending teacher requests.
         </Typography>
       )}

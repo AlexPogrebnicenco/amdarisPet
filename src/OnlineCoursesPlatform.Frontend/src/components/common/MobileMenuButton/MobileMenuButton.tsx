@@ -20,4 +20,3 @@ const MobileMenuButton = ({ mobileMenuId, onClick }: MobileMenuButtonProps) => (
 );
 
 export default MobileMenuButton;
-

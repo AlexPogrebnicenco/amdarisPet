@@ -11,9 +11,10 @@ namespace OnlineCoursesPlatform.Application.Features.Users.Dto.Validators
                 .NotEmpty().WithMessage("User name is required.")
                 .Length(2, 100).WithMessage("User name must be between 2 and 100 characters.");
 
-            RuleFor(x => x.Email)
-                .NotEmpty().WithMessage("Email is required.")
-                .EmailAddress().WithMessage("Email must be a valid email address.");
+            RuleFor(x => x.AvatarUrl)
+                .Must(url => Uri.IsWellFormedUriString(url, UriKind.Absolute))
+                .When(x => !string.IsNullOrWhiteSpace(x.AvatarUrl))
+                .WithMessage("Avatar URL must be a valid URL.");
         }
     }
 }

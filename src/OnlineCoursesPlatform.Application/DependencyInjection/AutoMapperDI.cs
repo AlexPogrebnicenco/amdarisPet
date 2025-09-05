@@ -8,8 +8,6 @@ namespace OnlineCoursesPlatform.Application.DependencyInjection
         public static IServiceCollection AddAutoMapperServices(this IServiceCollection services)
         {
             services.AddAutoMapper(typeof(UserProfile).Assembly);
-            services.AddAutoMapper(typeof(TeacherRegistrationRequestProfile).Assembly);
-            
 
             return services;
         }

@@ -28,8 +28,6 @@ namespace OnlineCoursesPlatform.Application.Features.Courses.Commands.Handlers
             }
 
             _mapper.Map(request.Dto, course);
-
-            // Меняем дату обновления вручную
             course.DateModified = DateTime.UtcNow;
 
             await _unitOfWork.CourseRepository.UpdateAsync(course);

@@ -1,4 +1,6 @@
-﻿namespace OnlineCoursesPlatform.Domain.Entities
+﻿using OnlineCoursesPlatform.Domain.Enums;
+
+namespace OnlineCoursesPlatform.Domain.Entities
 {
     public class Course
     {
@@ -10,6 +12,8 @@
 
         public int? CategoryId { get; set; }
         public virtual Category? Category { get; set; }
+        public CourseDifficulty Difficulty { get; set; }
+        public string? About { get; set; }
 
         public virtual ICollection<Review> Reviews { get; set; } = new List<Review>();
         public virtual ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();

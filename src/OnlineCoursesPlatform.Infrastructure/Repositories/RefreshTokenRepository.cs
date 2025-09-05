@@ -24,5 +24,19 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
             _context.RefreshTokens.Update(token);
             await Task.CompletedTask;
         }
+
+        public async Task RevokeAllAsync(int userId)
+        {
+            var tokens = await _context.RefreshTokens
+                .Where(t => t.UserId == userId && !t.IsRevoked && t.ExpiresAt > DateTime.UtcNow)
+                .ToListAsync();
+
+            foreach (var token in tokens)
+            {
+                token.IsRevoked = true;
+            }
+
+            await _context.SaveChangesAsync();
+        }
     }
 }

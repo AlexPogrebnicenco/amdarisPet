@@ -1,4 +1,5 @@
 import axiosInstance from "../api/axios";
+import type { PagedResult } from "../interfaces/PagedResult"
 
 export interface TeacherRequestDto {
   id: number;
@@ -10,10 +11,6 @@ export interface TeacherRequestDto {
   requestedAt: string;
 }
 
-export interface PagedResult<T> {
-  items: T[];
-  totalCount: number;
-}
 
 export const getPendingTeacherRequests = async (page: number, pageSize: number): Promise<PagedResult<TeacherRequestDto>> => {
   const response = await axiosInstance.get<PagedResult<TeacherRequestDto>>(`/teacher-requests?page=${page}&pageSize=${pageSize}`);

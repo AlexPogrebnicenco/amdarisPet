@@ -1,11 +1,16 @@
 import { styled, alpha } from "@mui/material/styles";
 import InputBase from "@mui/material/InputBase";
 import Box from "@mui/material/Box";
-import { useState } from "react";
-import useMediaQuery from "@mui/material/useMediaQuery";
-import { useTheme } from "@mui/material/styles";
-import { IconButton } from "@mui/material";
+import { useEffect } from "react";
 import { MdFilterList } from "react-icons/md";
+import debounce from "lodash.debounce";
+import CloseIcon from "@mui/icons-material/Close";
+
+interface SearchFilterProps {
+  searchTerm: string;
+  setSearchTerm: (value: string) => void;
+  onSearch: (query: string) => void;
+}
 
 const SearchContainer = styled("div")(({ theme }) => ({
   position: "relative",
@@ -51,8 +56,30 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const SearchFilter = () => {
-  const theme = useTheme();
+const SearchFilter = ({
+  searchTerm,
+  setSearchTerm,
+  onSearch,
+}: SearchFilterProps) => {
+  // console.log("SearchFilter mounted with onSearch:", onSearch);
+
+  useEffect(() => {
+    const debounced = debounce((value: string) => {
+      if (typeof onSearch === "function") {
+        if (value.length >= 3) {
+          onSearch(value);
+        } else {
+          onSearch("");
+        }
+      } else {
+        console.warn("onSearch is not a function", onSearch);
+      }
+    }, 400);
+
+    debounced(searchTerm);
+
+    return () => debounced.cancel();
+  }, [searchTerm]);
 
   return (
     <Box sx={{ flexGrow: 1, height: "100%" }}>
@@ -61,9 +88,32 @@ const SearchFilter = () => {
           <MdFilterList />
         </SearchIconWrapper>
         <StyledInputBase
-          placeholder="Filter 80 results..."
+          placeholder="Search courses..."
           inputProps={{ "aria-label": "search" }}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
+        {/* Крестик-сброс */}
+        {searchTerm.length > 0 && (
+          <Box
+            onClick={() => {
+              setSearchTerm("");
+              onSearch("");
+            }}
+            sx={{
+              position: "absolute",
+              right: 8,
+              top: "60%",
+              transform: "translateY(-50%)",
+              cursor: "pointer",
+              color: "white",
+              opacity: 0.7,
+              "&:hover": { opacity: 1 },
+            }}
+          >
+            <CloseIcon fontSize="small" />
+          </Box>
+        )}
       </SearchContainer>
     </Box>
   );

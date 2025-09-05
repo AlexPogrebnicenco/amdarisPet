@@ -10,7 +10,7 @@ export const textColors = {
 //   danger: '#FF4444',
   link: '#8EC2FF',
 //   note: '#CCCCCC',
-//   info: '#5AC8FA',
+// info: '#5AC8FA',
 //   code: '#FFD700',
 //   label: '#7F8C8D',
 };
@@ -57,6 +57,7 @@ export const theme = createTheme({
       border: '#33363E',            // граница
       badgeNewBg: '#FF476C',        // бейдж NEW
       badgeProBg: '#697CF1',      // бейдж PRO
+      hoverBackground: "#1C252E"
     },
   },
   typography: {
@@ -82,6 +83,7 @@ declare module '@mui/material/styles' {
       border: string;
       badgeNewBg: string;
       badgeProBg: string;
+      hoverBackground: string;
     };
   }
 
@@ -102,6 +104,7 @@ declare module '@mui/material/styles' {
       border?: string;
       badgeNewBg?: string;
       badgeProBg?: string;
+      hoverBackground?: string;
     };
   }
 }

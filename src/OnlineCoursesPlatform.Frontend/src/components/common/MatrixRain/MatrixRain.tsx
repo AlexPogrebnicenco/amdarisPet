@@ -4,7 +4,7 @@ import { Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import CommonButton from '../CommonButton/CommonButton';
 
-const letters = ['W', 'E', 'L', 'C', 'O', 'M', 'E', ' ', 'T', 'O', ' ', 'O', 'C', 'R'];
+const letters = ['W', 'E', 'L', 'C', 'O', 'M', 'E', ' ', 'T', 'O', ' ', 'O', 'C', 'P'];
 
 const MatrixRain: React.FC = () => {
   const canvasRef1 = useRef<HTMLCanvasElement | null>(null);

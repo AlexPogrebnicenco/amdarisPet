@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using OnlineCoursesPlatform.Application.Abstractions.Repositories;
 using OnlineCoursesPlatform.Application.Abstractions.Security;
+using OnlineCoursesPlatform.Application.Abstractions.Services;
 using OnlineCoursesPlatform.Application.Interfaces.Repositories;
 using OnlineCoursesPlatform.Infrastructure.Persistence;
+using OnlineCoursesPlatform.Infrastructure.RealTime;
 using OnlineCoursesPlatform.Infrastructure.Repositories;
 using OnlineCoursesPlatform.Infrastructure.Security;
 
@@ -12,9 +15,14 @@ public static class InfrastructureDI
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
         services.AddDbContext<AppDbContext>(options =>
-            options
-                .UseLazyLoadingProxies() // Lazy Loading
-                .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=OnlineCoursesPlatformEF;Trusted_Connection=True;TrustServerCertificate=True")
+                options
+                    .UseLazyLoadingProxies()
+                    .UseSqlServer(@"Server=(localdb)\MSSQLLocalDB;Database=OnlineCoursesPlatformEF;Trusted_Connection=True;TrustServerCertificate=True",
+                        sqlOptions =>
+                        {
+                            sqlOptions.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
+                        }
+                    )
         );
 
 
@@ -38,6 +46,9 @@ public static class InfrastructureDI
         services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
         services.AddScoped<ICourseAuthorRepository, CourseAuthorRepository>();
+
+        services.AddScoped<IRealTimeNotifier, RealTimeNotifier>();
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 

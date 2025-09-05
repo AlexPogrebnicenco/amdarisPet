@@ -1,28 +1,70 @@
 import React, { useState } from "react";
-import { Box, Button, useTheme } from "@mui/material";
-import BasicMenu from "../BasicMenu/BasicMenu";
+import { Box, Button, Menu, MenuItem, useTheme } from "@mui/material";
 import { HiSortDescending } from "react-icons/hi";
 
-const SortOrderMenu: React.FC = () => {
-  const menuItems: { id: number; label: string; icon?: React.ReactNode }[] = [
-    { id: 0, label: "Most Popular", icon: <HiSortDescending size={18} /> },
-    { id: 1, label: "Last Interacted", icon: <HiSortDescending size={18} /> },
-    { id: 2, label: "Last Created", icon: <HiSortDescending size={18} /> },
-    { id: 3, label: "Last Modified", icon: <HiSortDescending size={18} /> },
-    { id: 4, label: "Last Visited", icon: <HiSortDescending size={18} /> },
-    { id: 5, label: "Longest", icon: <HiSortDescending size={18} /> },
-    { id: 6, label: "Shortest", icon: <HiSortDescending size={18} /> },
+interface SortOrderMenuProps {
+  onChange: (value: string) => void;
+  defaultValue?: string;
+}
+
+const SortOrderMenu: React.FC<SortOrderMenuProps> = ({
+  onChange,
+  defaultValue,
+}) => {
+  const menuItems: {
+    id: number;
+    label: string;
+    value: string;
+    icon?: React.ReactNode;
+  }[] = [
+    {
+      id: 0,
+      label: "Last Created",
+      value: "lastCreated",
+      icon: <HiSortDescending size={18} />,
+    },
+    {
+      id: 1,
+      label: "Most Popular",
+      value: "mostPopular",
+      icon: <HiSortDescending size={18} />,
+    },
+
+    {
+      id: 2,
+      label: "Last Modified",
+      value: "lastModified",
+      icon: <HiSortDescending size={18} />,
+    },
+    {
+      id: 3,
+      label: "Longest",
+      value: "longest",
+      icon: <HiSortDescending size={18} />,
+    },
+    {
+      id: 4,
+      label: "Shortest",
+      value: "shortest",
+      icon: <HiSortDescending size={18} />,
+    },
   ];
 
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [selected, setSelected] = useState(menuItems[0]);
+  const defaultItem =
+    menuItems.find((i) => i.value === defaultValue) || menuItems[0];
 
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selected, setSelected] = useState(defaultItem);
   const theme = useTheme();
 
   const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+    if (anchorEl) {
+      handleClose();
+    } else {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
   const handleClose = () => {
@@ -31,6 +73,7 @@ const SortOrderMenu: React.FC = () => {
 
   const handleSelect = (item: (typeof menuItems)[number]) => {
     setSelected(item);
+    onChange(item.value); // Оповещаю родителя
     handleClose();
   };
 
@@ -60,13 +103,54 @@ const SortOrderMenu: React.FC = () => {
           {selected.label}
         </Button>
       </Box>
-      <BasicMenu
+
+      <Menu
         anchorEl={anchorEl}
         open={open}
-        handleClose={handleClose}
-        menuItems={menuItems}
-        onSelect={handleSelect}
-      />
+        onClose={handleClose}
+        disableScrollLock
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "center",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+        PaperProps={{
+          sx: {
+            mt: 1,
+            backgroundColor: theme.palette.background.paper,
+            color: theme.palette.text.primary,
+          },
+        }}
+      >
+        {menuItems.map((item) => (
+          <MenuItem
+            key={item.id}
+            onClick={() => handleSelect(item)}
+            sx={{
+              color: "#8A96A5",
+              mx: 0.5,
+              borderRadius: 1,
+              "&:hover": {
+                backgroundColor: "#2F333A",
+              },
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
+              <HiSortDescending size={18} />
+              {item.label}
+            </Box>
+          </MenuItem>
+        ))}
+      </Menu>
     </>
   );
 };

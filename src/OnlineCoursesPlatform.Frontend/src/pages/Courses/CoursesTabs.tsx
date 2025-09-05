@@ -1,75 +1,54 @@
-import React, { useMemo, useState } from "react";
-import { Box, Tabs, Tab, useTheme, } from "@mui/material";
+import UniversalTabs from "../../components/common/UniversalTabs/UniversalTabs";
 import CoursesFiltersPanel from "./CourseFiltersPanel";
-import { alpha } from "@mui/material/styles";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import StartedCoursesFiltersPanel from "./Started/StartedCoursesFiltersPanel";
 
-const tabLabels = [
-  { label: "Browse", count: 80 },
-  { label: "Started", count: 3 },
-  { label: "Completed", count: 1 },
+interface CoursesTabsProps {
+  sort: string;
+  setSort: (value: string) => void;
+  tag: string | null;
+  setTag: (tag: string | null) => void;
+  onSearch: (query: string) => void;
+}
+
+const coursesTabs = [
+  { label: "Browse", route: "/app/courses/browse" },
+  { label: "Started", route: "/app/courses/started" },
+  { label: "Completed", route: "/app/courses/completed" },
 ];
 
-const CoursesTabs: React.FC = () => {
-  const [tab, setTab] = useState(0);
-
-  const theme = useTheme();
-
-  const isXS = useMediaQuery("(max-width:393px)");
-  const isSM = useMediaQuery("(min-width:393px) and (max-width:599px)");
-
-  const topOffset = useMemo(() => {
-    if (isXS) return 55;
-    if (isSM) return 47;
-    return 63;
-  }, [isXS, isSM]);
-
-  const handleChange = (_: React.SyntheticEvent, newValue: number) => {
-    setTab(newValue);
-  };
-
-
+const CoursesTabs: React.FC<CoursesTabsProps> = ({
+  sort,
+  setSort,
+  tag,
+  setTag,
+  onSearch,
+}) => {
   return (
-    <Box
-      sx={{
-        position: "sticky",
-        top: topOffset,
-        zIndex: 100,
-        backgroundColor: alpha(theme.palette.background.default, 0.8),
-        backdropFilter: "blur(6px)", // для эффекта размытияs
+    <UniversalTabs
+      tabs={coursesTabs}
+      filtersPanel={(currentTab) => {
+        switch (currentTab.route) {
+          case "/app/courses/browse":
+            return (
+              <CoursesFiltersPanel
+                onSortChange={setSort}
+                onTagChange={setTag}
+                onSearch={onSearch}
+              />
+            );
+          case "/app/courses/started":
+            return (
+              <StartedCoursesFiltersPanel
+                onSortChange={setSort}
+                onTagChange={setTag}
+                onSearch={onSearch}
+              />
+            );
+          default:
+            return null;
+        }
       }}
-    >
-      <Tabs
-        value={tab}
-        onChange={handleChange}
-        sx={{
-          "& .MuiTabs-indicator": {
-            backgroundColor: theme.palette.button.main,
-          },
-        }}
-      >
-        {tabLabels.map((tabItem, index) => (
-          <Tab
-            key={index}
-            label={`${tabItem.label} (${tabItem.count})`}
-            sx={{
-              textTransform: "none",
-              color: theme.palette.text.primary,
-              "&:hover": {
-                color: theme.palette.text.secondary,
-              },
-              "&.Mui-selected": {
-                color: theme.palette.text.secondary,
-              },
-            }}
-          />
-        ))}
-      </Tabs>
-
-      <CoursesFiltersPanel />
-      
-    </Box>
-
+    />
   );
 };
 

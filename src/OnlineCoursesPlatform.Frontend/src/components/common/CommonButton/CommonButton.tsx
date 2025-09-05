@@ -1,4 +1,5 @@
 import { Button, useTheme, type SxProps } from "@mui/material";
+import type { ReactNode } from "react";
 
 interface CustomButtonProps {
   type?: "button" | "submit" | "reset";
@@ -6,6 +7,8 @@ interface CustomButtonProps {
   fullWidth?: boolean;
   onClick?: () => void;
   sx?: SxProps;
+  startIcon?: ReactNode;
+  disabled?: boolean;
 }
 
 const CommonButton = ({
@@ -14,6 +17,8 @@ const CommonButton = ({
   fullWidth = false,
   onClick,
   sx,
+  startIcon,
+  disabled,
 }: CustomButtonProps) => {
   const theme = useTheme();
   return (
@@ -22,6 +27,8 @@ const CommonButton = ({
       variant="contained"
       fullWidth={fullWidth}
       onClick={onClick}
+      startIcon={startIcon}
+      disabled={disabled}
       sx={{
         backgroundColor: theme.palette.button.main,
         color: "#fff",

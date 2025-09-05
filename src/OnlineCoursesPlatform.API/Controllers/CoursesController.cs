@@ -24,7 +24,7 @@ namespace OnlineCoursesPlatform.API.Controllers
         }
 
         // Create 
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateCourse([FromBody] CreateCourseDto dto)
         {
@@ -43,7 +43,7 @@ namespace OnlineCoursesPlatform.API.Controllers
         }
 
         // Update 
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCourse(int id, [FromBody] UpdateCourseDto dto)
         {
@@ -52,7 +52,7 @@ namespace OnlineCoursesPlatform.API.Controllers
         }
 
         // Delete 
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCourse(int id)
         {
@@ -61,33 +61,19 @@ namespace OnlineCoursesPlatform.API.Controllers
         }
 
         // PATCH method
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpPatch("{id}")]
         public async Task<IActionResult> PatchCourse(int id, [FromBody] JsonPatchDocument<UpdateCourseDto> patchDoc)
         {
             if (patchDoc == null)
                 return BadRequest();
 
-            // Загружаем существующий курс
-            var course = await _mediator.Send(new GetCourseByIdQuery(id));
-            if (course == null)
-                return NotFound();
-
-            // Патчим DTO
-            var courseDto = new UpdateCourseDto
-            {
-                Title = course.Title,
-                Description = course.Description,
-                CategoryId = course.CategoryId
-            };
-
-            patchDoc.ApplyTo(courseDto);
-
-            // Отправляем команду с готовым DTO в Application
-            await _mediator.Send(new PatchCourseCommand(id, courseDto));
+            // Передаём патч-документ в команду (всю логику заберёт хендлер)
+            await _mediator.Send(new PatchCourseCommand(id, patchDoc));
 
             return NoContent();
         }
+
 
         // Get by Id
         [HttpGet("{id}")]
@@ -176,6 +162,37 @@ namespace OnlineCoursesPlatform.API.Controllers
             var courses = await _mediator.Send(new GetCoursesAlphabeticallyDescQuery(pageNumber, pageSize));
             return Ok(courses);
         }
+
+        // Search 
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchCoursesByTitle([FromQuery] string query, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
+        {
+            var result = await _mediator.Send(new GetCoursesByTitleQuery(query, pageNumber, pageSize));
+            return Ok(result);
+        }
+
+
+        [Authorize(Roles = "Teacher,Admin")]
+        [HttpGet("teacher/own-courses")]
+        public async Task<IActionResult> GetTeacherOwnCourses(
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? sort = null,
+            [FromQuery] string? tag = null,
+            [FromQuery] string? search = null)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+            if (userIdClaim == null)
+                return Unauthorized();
+
+            var userId = int.Parse(userIdClaim.Value);
+
+            var result = await _mediator.Send(new GetCoursesByAuthorQuery(
+                userId, pageNumber, pageSize, sort, tag, search));
+
+            return Ok(result);
+        }
+
 
 
         // Enrollment process

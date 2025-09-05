@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using OnlineCoursesPlatform.Domain.Entities;
+using OnlineCoursesPlatform.Domain.Enums;
 
 namespace OnlineCoursesPlatform.Infrastructure.Persistence.Configurations
 {
@@ -18,6 +19,11 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence.Configurations
                 .IsRequired()
                 .HasMaxLength(4000);
 
+            builder.Property(c => c.About)
+                .HasMaxLength(4000)
+                .HasDefaultValue("Nothing about this course");
+
+
             builder.Property(c => c.DateCreated)
                 .HasDefaultValueSql("GETDATE()")
                 .IsRequired();
@@ -30,6 +36,11 @@ namespace OnlineCoursesPlatform.Infrastructure.Persistence.Configurations
                 .WithMany(c => c.Courses)
                 .HasForeignKey(c => c.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(c => c.Difficulty)
+                 .IsRequired()
+                 .HasConversion<string>()
+                 .HasDefaultValue(CourseDifficulty.Beginner); ;
         }
     }
 }

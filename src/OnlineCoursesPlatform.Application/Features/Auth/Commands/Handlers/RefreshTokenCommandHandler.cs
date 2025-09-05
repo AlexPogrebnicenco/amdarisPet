@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using OnlineCoursesPlatform.Application.Abstractions.Repositories;
 using OnlineCoursesPlatform.Application.Abstractions.Security;
 using OnlineCoursesPlatform.Application.Features.Auth.Dto;
+using OnlineCoursesPlatform.Application.Features.Users.Dto;
 using OnlineCoursesPlatform.Domain.Entities;
 
 namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
@@ -31,21 +32,30 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             var dto = request.Dto;
             var storedToken = await _refreshTokenRepository.GetByTokenAsync(dto.RefreshToken);
 
-            if (storedToken == null || storedToken.ExpiresAt < DateTime.UtcNow)
+            if (storedToken == null)
             {
-                _logger.LogWarning("Invalid or expired refresh token: {Token}", dto.RefreshToken);
-                throw new UnauthorizedAccessException("Invalid or expired refresh token");
+                _logger.LogWarning("Invalid or non-existent refresh token: {Token}", dto.RefreshToken);
+                throw new UnauthorizedAccessException("Invalid refresh token.");
+            }
+
+            if (storedToken.IsRevoked || storedToken.ExpiresAt < DateTime.UtcNow)
+            {
+                _logger.LogWarning("Replay attack detected or token expired: {Token}", dto.RefreshToken);
+
+                // Защита: отзываем все токены пользователя
+                await _refreshTokenRepository.RevokeAllAsync(storedToken.UserId);
+                throw new UnauthorizedAccessException("Detected reuse of revoked or expired refresh token.");
             }
 
             var user = storedToken.User;
 
+            // Помечаем текущий токен как отозванный (удалить или revoke)
             await _refreshTokenRepository.RevokeAsync(storedToken);
-
 
             var newAccessToken = _jwtTokenGenerator.GenerateToken(user.Id, user.Email, user.UserName, user.Role);
             var newRefreshToken = new RefreshToken
             {
-                Token = Guid.NewGuid().ToString(),
+                Token = _jwtTokenGenerator.GenerateRefreshToken(),
                 UserId = user.Id,
                 ExpiresAt = DateTime.UtcNow.AddDays(7),
                 IsRevoked = false
@@ -57,9 +67,14 @@ namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers
             return new AuthResponse
             {
                 AccessToken = newAccessToken,
-                AccessTokenExpiration = DateTime.UtcNow.AddMinutes(60),
+                AccessTokenExpiration = DateTime.UtcNow.AddMinutes(15),
                 RefreshToken = newRefreshToken.Token,
                 RefreshTokenExpiration = newRefreshToken.ExpiresAt,
+                UserInfo = new UserAccountInfoDto
+                {
+                    UserName = user.UserName,
+                    AvatarUrl = user.AvatarUrl
+                }
             };
         }
     }

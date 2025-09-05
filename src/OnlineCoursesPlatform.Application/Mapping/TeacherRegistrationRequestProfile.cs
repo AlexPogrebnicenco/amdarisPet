@@ -9,7 +9,8 @@ namespace OnlineCoursesPlatform.Application.Mapping
         public TeacherRegistrationRequestProfile()
         {
             // Маппинг TeacherRegistrationRequest -> TeacherRequestDto (для выдачи на фронт)
-            CreateMap<TeacherRegistrationRequest, TeacherRequestDto>();
+            CreateMap<TeacherRegistrationRequest, TeacherRequestDto>()
+              .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToString()));
 
             // Маппинг TeacherRegistrationRequest -> User (для создания нового пользователя)
             CreateMap<TeacherRegistrationRequest, User>()

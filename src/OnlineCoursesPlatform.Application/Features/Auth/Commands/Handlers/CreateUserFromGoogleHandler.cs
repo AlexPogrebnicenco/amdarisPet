@@ -5,6 +5,7 @@ using OnlineCoursesPlatform.Application.Abstractions.Repositories;
 using OnlineCoursesPlatform.Application.Abstractions.Security;
 using OnlineCoursesPlatform.Application.Features.Auth.Commands;
 using OnlineCoursesPlatform.Application.Features.Auth.Dto;
+using OnlineCoursesPlatform.Application.Features.Users.Dto;
 using OnlineCoursesPlatform.Domain.Entities;
 
 namespace OnlineCoursesPlatform.Application.Features.Auth.Commands.Handlers;
@@ -37,8 +38,6 @@ public class CreateUserFromGoogleHandler : IRequestHandler<CreateUserFromGoogle,
         if (user == null)
         {
             user = _mapper.Map<User>(dto);
-            user.ExternalProvider = "Google";
-            user.Role = "User";
 
             await _unitOfWork.UserRepository.AddAsync(user);
             await _unitOfWork.SaveAsync();
@@ -69,7 +68,12 @@ public class CreateUserFromGoogleHandler : IRequestHandler<CreateUserFromGoogle,
             AccessToken = accessToken,
             AccessTokenExpiration = DateTime.UtcNow.AddMinutes(60),
             RefreshToken = refreshToken,
-            RefreshTokenExpiration = refreshTokenEntity.ExpiresAt
+            RefreshTokenExpiration = refreshTokenEntity.ExpiresAt,
+            UserInfo = new UserAccountInfoDto
+            {
+                UserName = user.UserName,
+                AvatarUrl = user.AvatarUrl
+            }
         };
     }
 }

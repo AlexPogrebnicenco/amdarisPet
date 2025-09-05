@@ -1,7 +1,7 @@
 import React from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { useTheme } from "@mui/material/styles";
+import { useTheme, type SxProps, type Theme } from "@mui/material/styles";
 import { Box } from "@mui/material";
 
 interface BasicMenuProps {
@@ -14,6 +14,8 @@ interface BasicMenuProps {
     label: string;
     icon?: React.ReactNode;
   }) => void;
+  sx?: SxProps<Theme>;
+  disableScrollLock?: boolean;
 }
 
 const BasicMenu: React.FC<BasicMenuProps> = ({
@@ -22,6 +24,8 @@ const BasicMenu: React.FC<BasicMenuProps> = ({
   open,
   menuItems,
   onSelect,
+  sx,
+  disableScrollLock,
 }) => {
   const theme = useTheme();
 
@@ -31,10 +35,12 @@ const BasicMenu: React.FC<BasicMenuProps> = ({
       anchorEl={anchorEl}
       open={open}
       onClose={handleClose}
+      sx={sx}
+      disableScrollLock={disableScrollLock}
       slotProps={{
         paper: {
           sx: {
-            backgroundColor: theme.palette.background.paper, // светлый фон из темы
+            backgroundColor: theme.palette.background.paper,
             color: theme.palette.text.primary,
           },
         },

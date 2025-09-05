@@ -4,7 +4,15 @@ import BasicMenu from "../BasicMenu/BasicMenu";
 import { ViewList } from "@mui/icons-material";
 import { MdFilterListOff, MdOutlineRestore } from "react-icons/md";
 
-const ViewMenuButton: React.FC = () => {
+interface ViewMenuButtonProps {
+  onClearFilters: () => void;
+  onRestoreDefaults: () => void;
+}
+
+const ViewMenuButton: React.FC<ViewMenuButtonProps> = ({
+  onClearFilters,
+  onRestoreDefaults,
+}) => {
   const menuItems: { id: number; label: string; icon?: React.ReactNode }[] = [
     { id: 0, label: "Clear Filters", icon: <MdFilterListOff size={18} /> },
     { id: 1, label: "Restore Defaults", icon: <MdOutlineRestore size={18} /> },
@@ -26,6 +34,8 @@ const ViewMenuButton: React.FC = () => {
 
   const handleSelect = (item: (typeof menuItems)[number]) => {
     setSelected(item);
+    if (item.id === 0) onClearFilters();
+    if (item.id === 1) onRestoreDefaults();
     handleClose();
   };
 
@@ -58,6 +68,8 @@ const ViewMenuButton: React.FC = () => {
         handleClose={handleClose}
         menuItems={menuItems}
         onSelect={handleSelect}
+        disableScrollLock
+        sx={{ mt: 1 }}
       />
     </>
   );

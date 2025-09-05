@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using OnlineCoursesPlatform.Application.Abstractions.Repositories;
+using OnlineCoursesPlatform.Application.Features.Courses.Dto;
 
 namespace OnlineCoursesPlatform.Application.Features.Courses.Commands.Handlers
 {
@@ -27,7 +28,21 @@ namespace OnlineCoursesPlatform.Application.Features.Courses.Commands.Handlers
                 throw new Exception("Course not found.");
             }
 
-            _mapper.Map(request.PatchedDto, course);
+            // Маппим сущность в DTO
+            var courseDto = new UpdateCourseDto
+            {
+                Title = course.Title,
+                Description = course.Description,
+                CategoryId = course.CategoryId,
+                Difficulty = course.Difficulty,
+                About = course.About
+            };
+
+            // Применяем патч
+            request.PatchDoc.ApplyTo(courseDto);
+
+            // Маппим DTO обратно в сущность
+            _mapper.Map(courseDto, course);
             course.DateModified = DateTime.UtcNow;
 
             await _unitOfWork.CourseRepository.UpdateAsync(course);

@@ -21,7 +21,7 @@ namespace OnlineCoursesPlatform.Application.Features.Courses.Queries.Handlers
 
         public async Task<CourseDto> Handle(GetCourseByIdQuery request, CancellationToken cancellationToken)
         {
-            var course = await _unitOfWork.CourseRepository.GetByIdAsync(request.Id);
+            var course = await _unitOfWork.CourseRepository.GetCourseDetailsByIdAsync(request.Id);
             if (course is null)
             {
                 _logger.LogWarning("Course with Id: {CourseId} not found.", request.Id);

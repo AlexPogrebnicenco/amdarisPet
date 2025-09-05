@@ -1,31 +1,33 @@
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import BasicCard from "../../components/common/BasicCard/BasicCard";
-import { coursesData } from "./courseData";
+import { useState, useEffect  } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import CoursesTabs from "./CoursesTabs";
 
-export default function FullWidthGrid() {
+const Courses = () => {
+  const [sort, setSort] = useState("lastCreated");
+  const [tag, setTag] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+   const location = useLocation();
+
+   
+  useEffect(() => {
+    if (location.pathname.includes("/app/courses/browse")) {
+      setSort("lastCreated");
+      setTag(null);
+      setSearchQuery("");
+    } else if (location.pathname.includes("/app/courses/started")) {
+      setSort("lastCreated");
+      setTag(null);
+      setSearchQuery("");
+    }
+  }, [location.pathname]);
+
   return (
-     <Box sx={{ flexGrow: 1 }}>
-      <Grid container spacing={2}>
-        {coursesData.map((course, index) => {
-          const size =
-            index === 0
-              ? { xs: 12, md: 12, lg: 8 }
-              : index === 1
-              ? { xs: 12, md: 6, lg: 4 }
-              : index === 2
-              ? { xs: 12, md: 6, lg: 4 }
-              : index === 3
-              ? { xs: 12, md: 12, lg: 8 }
-              : { xs: 12, sm: 12, md: 6, lg: 4 };
-
-          return (
-            <Grid key={index} size={size}>
-              <BasicCard {...course} />
-            </Grid>
-          );
-        })}
-      </Grid>
-    </Box>
+    <>
+      <CoursesTabs sort={sort} setSort={setSort} tag={tag} setTag={setTag}  onSearch={setSearchQuery} />
+      <Outlet context={{ sort, tag, searchQuery }} />
+    </>
   );
-}
+};
+
+export default Courses;

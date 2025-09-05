@@ -2,7 +2,7 @@
 {
     public class UpdateUserDto
     {
-        public required string UserName { get; set; }
-        public required string Email { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string? AvatarUrl { get; set; }
     }
 }

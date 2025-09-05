@@ -10,5 +10,11 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
         public CategoryRepository(AppDbContext context) : base(context)
         {
         }
+        public async Task<List<Category>> GetAllOrderedAsync()
+        {
+            return await _context.Categories
+                .OrderBy(c => c.CategoryName)
+                .ToListAsync();
+        }
     }
 }

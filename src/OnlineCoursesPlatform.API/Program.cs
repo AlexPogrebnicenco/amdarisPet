@@ -1,25 +1,26 @@
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using OnlineCoursesPlatform.API.Common;
+using OnlineCoursesPlatform.API.DependencyInjection.Cloudinary;
 using OnlineCoursesPlatform.API.DependencyInjection.Swagger;
 using OnlineCoursesPlatform.API.Middlewares;
+using OnlineCoursesPlatform.Infrastructure.RealTime;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
 
-//builder.Configuration
-//    .SetBasePath(Directory.GetCurrentDirectory())
-//    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-//    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-//    .AddEnvironmentVariables();
 // Add services to the container
 builder.Services.AddControllers()
     .AddNewtonsoftJson()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.Converters.Add(new OnlineCoursesPlatform.API.Converters.DateTimeConverter());
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 builder.Services.AddSingleton<ProblemDetailsFactory, CustomProblemDetailsFactory>();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/apsnetcore/swashbuckle
+
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerWithCustomOptions();
 
@@ -28,6 +29,11 @@ builder.Services.AddSwaggerWithCustomOptions();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure();
 builder.Services.AddLogging();
+builder.Services.AddCloudinary(builder.Configuration);
+
+
+// SignalR
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(options =>
 {
@@ -39,7 +45,6 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
-
 
 
 // Authentication
@@ -65,6 +70,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<NotificationHub>("/notificationHub");
+
 app.Run();
 
 public partial class Program { }

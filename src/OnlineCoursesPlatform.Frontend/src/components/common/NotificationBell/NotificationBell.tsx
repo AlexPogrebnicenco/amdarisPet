@@ -1,24 +1,41 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Badge from "@mui/material/Badge";
 import NotificationIcon from "@mui/icons-material/Notifications";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import BasicMenu from "../BasicMenu/BasicMenu";
 import { useTheme } from "@mui/material/styles";
-
-const notifications = [
-  {
-    id: 0,
-    label: "First notification",
-  },
-  {
-    id: 1,
-    label: "Second notification",
-  },
-];
+import {
+  startNotificationConnection,
+  stopNotificationConnection,
+} from "../../../services/notificationService";
+import { useAuth } from "../../../context/AuthContext";
 
 const NotificationBell = () => {
+  const [notifications, setNotifications] = useState<
+    { id: number; label: string }[]
+  >([]);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
+  const { userId, role, isAuthenticated } = useAuth();
+
+  useEffect(() => {
+    if (isAuthenticated && role === "Teacher" && userId) {
+      startNotificationConnection(userId, (notification) => {
+        setNotifications((prev) => [
+          ...prev,
+          {
+            id: prev.length,
+            label: `New enrollment: ${notification.userEmail} on ${notification.courseTitle}`,
+          },
+        ]);
+      });
+    }
+
+    return () => {
+      stopNotificationConnection(); // Отключаем при размонтировании
+    };
+  }, [isAuthenticated, role, userId]);
 
   const handleOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     if (notifications.length > 0) {
@@ -28,6 +45,12 @@ const NotificationBell = () => {
 
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleSelectNotification = (item: { id: number; label: string }) => {
+    console.log("Selected notification:", item);
+    // Убираем уведомление после клика
+    setNotifications((prev) => prev.filter((n) => n.id !== item.id));
   };
 
   const open = Boolean(anchorEl);
@@ -75,10 +98,13 @@ const NotificationBell = () => {
         </IconButton>
       </Tooltip>
       <BasicMenu
+        disableScrollLock
         anchorEl={anchorEl}
         open={open}
         handleClose={handleClose}
         menuItems={notifications}
+        onSelect={handleSelectNotification}
+        sx={{ zIndex: 2000 }}
       />
     </>
   );

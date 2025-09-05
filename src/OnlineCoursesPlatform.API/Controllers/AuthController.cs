@@ -1,136 +1,195 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using OnlineCoursesPlatform.Application.Features.Auth.Commands;
 using OnlineCoursesPlatform.Application.Features.Auth.Dto;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
-using OnlineCoursesPlatform.Application.Features.TeacherRegistrationRequests.Dto;
 
-namespace OnlineCoursesPlatform.API.Controllers;
-
-
-[ApiController]
-[Route("api/auth")]
-public class AuthController : ControllerBase
+namespace OnlineCoursesPlatform.API.Controllers
 {
-    private readonly IMediator _mediator;
-
-    public AuthController(IMediator mediator)
+    [ApiController]
+    [Route("api/auth")]
+    public class AuthController : ControllerBase
     {
-        _mediator = mediator;
-    }
+        private readonly IMediator _mediator;
 
-    [HttpPost]
-    [Route("login")]
-    public async Task<IActionResult> Login([FromBody] LoginDto dto)
-    {
-        var response = await _mediator.Send(new LoginUser(dto));
-        return Ok(response);
-    }
-
-    [HttpPost("register-user")]
-    public async Task<IActionResult> RegisterUser([FromBody] RegisterDto dto)
-    {
-        var response = await _mediator.Send(new RegisterUser(dto));
-        return Ok(response);
-    }
-
-    [HttpPost("set-password")]
-    public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto dto)
-    {
-        await _mediator.Send(new SetPasswordCommand(dto));
-        return Ok(new { Message = "Password successfully set." });
-    }
-
-    [HttpPost("request-new-link")]
-    public async Task<IActionResult> RequestNewLink([FromBody] RequestNewLinkCommand command)
-    {
-        await _mediator.Send(command);
-        return Ok(new { Message = "New password link sent to your email." });
-    }
-
-    [HttpPost("forgot-password")]
-    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
-    {
-        await _mediator.Send(command);
-        return Ok(new { Message = "Password reset link sent to your email." });
-    }
-
-    //[HttpPost]
-    //[Route("register-teacher")]
-    //public async Task<IActionResult> RegisterTeacher([FromBody] CreateTeacherRegistrationRequestDto dto)
-    //{
-    //    await _mediator.Send(new RegisterTeacher(dto));
-    //    return Ok(new { Message = "Teacher registration request submitted successfully. Please wait for approval." });
-    //}
-
-    //[HttpPost("approve-teacher/{teacherId}")]
-    //public async Task<IActionResult> ApproveTeacher(int teacherId)
-    //{
-    //    await _mediator.Send(new ApproveTeacher(teacherId));
-    //    return Ok("Teacher approved and password setup email sent.");
-    //}
-
-    //[HttpPost]
-    //[Route("set-password")]
-    //public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto dto)
-    //{
-    //    var response = await _mediator.Send(new SetPassword(dto));
-    //    return Ok(response);
-    //}
-
-    [HttpPost("refresh-token")]
-    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDto dto)
-    {
-        var result = await _mediator.Send(new RefreshTokenCommand(dto));
-        return Ok(result);
-    }
-
-    [HttpGet]
-    [Route("login/google")]
-    public IActionResult GoogleLogin()
-    {
-        var properties = new AuthenticationProperties
+        public AuthController(IMediator mediator)
         {
-            RedirectUri = Url.Action("GoogleCallback", "Auth")!
-        };
+            _mediator = mediator;
+        }
 
-        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto dto)
+        {
+            var response = await _mediator.Send(new LoginUser(dto));
+
+            // Установка HttpOnly refresh-токена
+            Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = response.RefreshTokenExpiration,
+                IsEssential = true
+            });
+
+            return Ok(new
+            {
+                accessToken = response.AccessToken,
+                accessTokenExpiration = response.AccessTokenExpiration,
+                userInfo = response.UserInfo
+            });
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken()
+        {
+            var refreshToken = Request.Cookies["refreshToken"];
+
+            if (string.IsNullOrEmpty(refreshToken))
+            {
+                return Unauthorized(new { message = "Missing refresh token." });
+            }
+
+            var result = await _mediator.Send(new RefreshTokenCommand(new RefreshTokenRequestDto
+            {
+                RefreshToken = refreshToken
+            }));
+
+            // Обновление HttpOnly refresh-токена
+            Response.Cookies.Append("refreshToken", result.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = result.RefreshTokenExpiration,
+                IsEssential = true
+            });
+
+            return Ok(new
+            {
+                accessToken = result.AccessToken,
+                accessTokenExpiration = result.AccessTokenExpiration,
+                userInfo = result.UserInfo
+            });
+        }
+
+        [HttpGet("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            Response.Cookies.Delete("refreshToken");
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Ok(new { message = "You have been logged out." });
+        }
+
+        [HttpPost("register-user")]
+        public async Task<IActionResult> RegisterUser([FromBody] RegisterDto dto)
+        {
+            var response = await _mediator.Send(new RegisterUser(dto));
+
+            // Устанавливаем refreshToken в HttpOnly cookie
+            Response.Cookies.Append("refreshToken", response.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = response.RefreshTokenExpiration,
+                IsEssential = true
+            });
+
+            return Ok(new
+            {
+                accessToken = response.AccessToken,
+                accessTokenExpiration = response.AccessTokenExpiration,
+                userInfo = response.UserInfo
+            });
+        }
+
+
+        [HttpPost("set-password")]
+        public async Task<IActionResult> SetPassword([FromBody] SetPasswordDto dto)
+        {
+            await _mediator.Send(new SetPasswordCommand(dto));
+            return Ok(new { message = "Password successfully set." });
+        }
+
+        [HttpPost("request-new-link")]
+        public async Task<IActionResult> RequestNewLink([FromBody] RequestNewLinkCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(new { message = "New password link sent to your email." });
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(new { message = "Password reset link sent to your email." });
+        }
+
+        [HttpGet("login/google")]
+        public IActionResult GoogleLogin()
+        {
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = Url.Action("GoogleCallback", "Auth")!
+            };
+
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet("signin-google")]
+        public async Task<IActionResult> GoogleCallback()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var claims = result.Principal?.Identities.FirstOrDefault()?.Claims;
+
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var name = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+            var avatar = claims?.FirstOrDefault(c => c.Type == "picture")?.Value;
+
+            if (string.IsNullOrEmpty(email))
+                return Problem("Google did not return an email");
+
+            var dto = new CreateUserFromGoogleDto
+            {
+                Email = email,
+                UserName = name ?? email,
+                AvatarUrl = avatar
+            };
+
+            var authResult = await _mediator.Send(new CreateUserFromGoogle(dto));
+
+            // Устанавливаем refresh token в cookie
+            Response.Cookies.Append("refreshToken", authResult.RefreshToken, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict,
+                Expires = authResult.RefreshTokenExpiration,
+                IsEssential = true
+            });
+
+            // Перенаправляем на фронт с accessToken в query
+            var frontendUrl = $"https://localhost:5173/google-callback" +
+                  $"?accessToken={Uri.EscapeDataString(authResult.AccessToken)}" +
+                  $"&accessTokenExpiration={Uri.EscapeDataString(authResult.AccessTokenExpiration.ToString("o"))}" +
+                  $"&userName={Uri.EscapeDataString(authResult.UserInfo.UserName)}" +
+                  $"&avatarUrl={Uri.EscapeDataString(authResult.UserInfo.AvatarUrl ?? "")}";
+
+
+            return Redirect(frontendUrl);
+        }
+
+
+        [HttpGet("protected")]
+        [Authorize]
+        public IActionResult ProtectedRoute()
+        {
+            return Ok("You are authorized");
+        }
     }
-
-    [HttpGet]
-    [Route("signin-google")]
-    public async Task<IActionResult> GoogleCallback([FromServices] IMediator mediator)
-    {
-        var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        var claims = result.Principal?.Identities.FirstOrDefault()?.Claims;
-
-        var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
-        var name = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-
-        if (string.IsNullOrEmpty(email))
-            return Problem("Google did not return an email");
-
-        var dto = new CreateUserFromGoogleDto { Email = email, UserName = name ?? email };
-        var authResult = await mediator.Send(new CreateUserFromGoogle(dto));
-
-        return Ok(authResult);
-    }
-
-    [HttpGet]
-    [Route("logout")]
-    public async Task<IActionResult> Logout()
-    {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return Ok(new { Message = "You have been logged out." });
-    }
-
-    [HttpGet]
-    [Route("protected")]
-    [Authorize]
-    public IActionResult ProtectedRoute() => Ok("You are authorized");
-
 }

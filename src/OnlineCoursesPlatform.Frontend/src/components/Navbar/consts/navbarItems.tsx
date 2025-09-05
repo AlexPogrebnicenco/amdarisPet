@@ -5,7 +5,7 @@ import ExtensionIcon from '@mui/icons-material/Extension';
 import EqualizerIcon from '@mui/icons-material/Equalizer';
 import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import InfoIcon from '@mui/icons-material/Info';
-import CoursesTabs from '../../../pages/Courses/CoursesTabs';
+// import CoursesTabs from '../../../pages/Courses/CoursesTabs';
 
 export const mainNavbarItems = [
     {
@@ -21,7 +21,7 @@ export const mainNavbarItems = [
         label: 'Courses',
         route: 'courses',
         description: "Improve your web development skills in a variety of languages andframeworks, including HTML, CSS, JavaScript, React, TypeScript, andcutting-edge methods in AI.",
-        tabsComponent: CoursesTabs
+        // tabsComponent: CoursesTabs
     },
     {
         id: 2,

@@ -7,8 +7,13 @@ namespace OnlineCoursesPlatform.Infrastructure.Repositories
 {
     public class CourseTagRepository : RepositoryEF<CourseTag>, ICourseTagRepository
     {
-        public CourseTagRepository(AppDbContext context) : base(context)
+        public CourseTagRepository(AppDbContext context) : base(context) { }
+
+        public async Task<List<CourseTag>> GetByCourseIdAsync(int courseId)
         {
+            return await _context.CourseTags
+                .Where(ct => ct.CourseId == courseId)
+                .ToListAsync();
         }
     }
 }
